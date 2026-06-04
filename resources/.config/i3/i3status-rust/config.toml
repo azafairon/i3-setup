@@ -1,0 +1,103 @@
+[error_fullscreen_format]
+full = " $full_error_message "
+short = " $full_error_message.str(w:170, rot_interval:0.2) "
+
+[icons]
+icons = "material-nf"
+[icons.overrides]
+no_wifi = "\U000f05aa" # nf-md-wifi_off
+bell-slash = "\U000f00a0" # nf-md-bell_sleep
+degree = "\u00B0"
+
+[theme]
+theme = "semi-native"
+[theme.overrides]
+# separator = "<span font_family='NotoSans Nerd Font'>\ue0b2</span>"
+[[block]]
+block = "net"
+device = "wlp58s0"
+interval = 2
+format = " $icon  $speed_down.eng(w:3,p:K)/s "
+format_alt = " $icon {$signal_strength|?} {$frequency.eng(w:3) |}{$ssid |}via $device "
+inactive_format = " ^icon_no_wifi "
+merge_with_next = true
+
+[[block]]
+block = "bluetooth"
+mac = "00:18:09:92:1B:BA"
+format = " $icon {$battery_icon |}"
+disconnected_format = " $icon "
+[block.battery_state]
+"0..20" = "critical"
+"21..70" = "warning"
+"71..100" = "good"
+
+[[block]]
+block = "disk_space"
+interval = 60
+info_type = "available"
+alert_unit = "GB"
+alert = 10.0
+warning = 15.0
+format = " $icon $available.eng(w:5,p:1) "
+format_alt = " $icon $used.eng(w:5,p:1)/$total.eng(w:5,p:1) "
+
+[[block]]
+block = "cpu"
+interval = 5
+format = " $icon $utilization "
+format_alt = " $icon $utilization.eng(w:5) $max_frequency.eng(w:3,prefix:M) "
+merge_with_next = true
+
+[[block]]
+block = "memory"
+format = " $icon $mem_used_percents.eng(w:1) "
+format_alt = " $icon $mem_used.eng(w:1)/$mem_total "
+merge_with_next = true
+
+[[block]]
+block = "temperature"
+format = " $icon $average "
+good = 0
+info = 100
+warning = 100
+
+[[block]]
+block = "sound"
+driver = "pulseaudio"
+format = " $icon {$volume |}"
+device_kind = "sink"
+step_width = 1
+merge_with_next = true
+[[block.click]]
+button = "left"
+cmd = "pavucontrol"
+
+[[block]]
+block = "sound"
+driver = "pulseaudio"
+format = " $icon {$volume |}"
+device_kind = "source"
+step_width = 1
+[block.theme_overrides]
+idle_fg = { link = "warning_fg" }
+idle_bg = { link = "warning_bg" }
+warning_fg = { link = "idle_fg" }
+warning_bg = { link = "idle_bg" }
+[[block.click]]
+button = "left"
+action = "toggle_mute"
+
+
+[[block]]
+block = "time"
+format = "$timestamp.datetime(f:'%a %d %R') "
+
+[[block]]
+block = "battery"
+driver = "upower"
+full_threshold = 100
+format = " $icon $percentage {($time) |}"
+charging_format = " $icon $percentage "
+not_charging_format = ""
+full_format = ""
