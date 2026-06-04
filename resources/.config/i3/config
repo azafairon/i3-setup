@@ -49,9 +49,9 @@ bindsym $mod+Ctrl+m exec i3-sensible-terminal -e 'alsamixer'
 # Start Applications
 bindsym $mod+F2 exec google-chrome-stable
 bindsym $mod+F3 exec pcmanfm
-bindsym $mod+Shift+F3 exec pcmanfm_pkexec
+bindsym $mod+Shift+F3 exec --no-startup-id sh -c 'pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY pcmanfm'
 bindsym $mod+Ctrl+t exec --no-startup-id picom -b
-bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
+bindsym $mod+Shift+d --release exec --no-startup-id sh -c 'killall dunst; dunst >/dev/null 2>&1 & sleep 0.2; notify-send "Dunst restarted"'
 bindsym Print exec --no-startup-id ksnip
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 
@@ -267,12 +267,13 @@ bindsym $mod+9 exec --no-startup-id blurlock
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id autorandr -c && nitrogen --restore
 exec --no-startup-id nm-applet
+exec --no-startup-id xsettingsd
 exec --no-startup-id xfce4-power-manager
 exec --no-startup-id pamac-tray
 exec --no-startup-id clipit
 exec --no-startup-id picom -b
 exec --no-startup-id xautolock -time 10 -locker blurlock
-exec_always --no-startup-id ff-theme-util
+exec_always --no-startup-id sh -c 'command -v ff-theme-util >/dev/null 2>&1 && ff-theme-util'
 exec_always --no-startup-id fix_xcursor
 
 set_from_resource $term_background background

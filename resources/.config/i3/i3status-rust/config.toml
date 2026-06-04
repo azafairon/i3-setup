@@ -15,7 +15,6 @@ theme = "semi-native"
 # separator = "<span font_family='NotoSans Nerd Font'>\ue0b2</span>"
 [[block]]
 block = "net"
-device = "wlp58s0"
 interval = 2
 format = " $icon  $speed_down.eng(w:3,p:K)/s "
 format_alt = " $icon {$signal_strength|?} {$frequency.eng(w:3) |}{$ssid |}via $device "
@@ -24,7 +23,6 @@ merge_with_next = true
 
 [[block]]
 block = "bluetooth"
-mac = "00:18:09:92:1B:BA"
 format = " $icon {$battery_icon |}"
 disconnected_format = " $icon "
 [block.battery_state]

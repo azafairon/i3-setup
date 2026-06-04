@@ -1,7 +1,7 @@
 # DO NOT EDIT! This file will be overwritten by nwg-look.
 # Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
-include "/home/noriaf/.gtkrc-2.0.mine"
+include ".gtkrc-2.0.mine"
 gtk-theme-name="Pop-dark"
 gtk-icon-theme-name="Numix-Circle"
 gtk-font-name="Adwaita Sans 11"

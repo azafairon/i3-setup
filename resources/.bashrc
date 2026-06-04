@@ -99,7 +99,7 @@ alias more=less
 alias vi='vim'
 alias vim='nvim'
 
-xhost +local:root > /dev/null 2>&1
+command -v xhost >/dev/null 2>&1 && xhost +local:root > /dev/null 2>&1
 
 complete -cf sudo
 
@@ -140,10 +140,8 @@ ex ()
     echo "'$1' is not a valid file"
   fi
 }
-source <(kubectl completion bash)
-alias k=kubectl
-complete -o default -F __start_kubectl k
-
-export DENO_INSTALL="/home/noriaf/git_src/azerothcore-wotlk/deps/deno"
-export PATH="$DENO_INSTALL/bin:$PATH"
-
+if command -v kubectl >/dev/null 2>&1; then
+  source <(kubectl completion bash)
+  alias k=kubectl
+  complete -o default -F __start_kubectl k
+fi
