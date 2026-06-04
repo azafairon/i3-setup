@@ -190,8 +190,8 @@ install_wallpaper() {
   run_if_command_exists xdg-user-dirs-update xdg-user-dirs-update
   mkdir -p "$HOME/Pictures"
   cp -f "$RESOURCES_DIR/wallpaper.jpg" "$HOME/Pictures/wallpaper.jpg"
-  if command -v nitrogen >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ]; then
-    nitrogen --set-zoom-fill "$HOME/Pictures/wallpaper.jpg" || true
+  if command -v feh >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ]; then
+    feh --bg-fill "$HOME/Pictures/wallpaper.jpg" || true
   fi
 }
 
@@ -228,9 +228,9 @@ change_default_shell() {
 verify_commands() {
   local missing=()
   local commands=(
-    alacritty autorandr blurlock clipit code dunst fzf google-chrome-stable i3exit ksnip
-    lightdm morc_menu nitrogen nm-applet nvim pamac-tray pavucontrol pcmanfm picom rofi
-    volumeicon xautolock xfce4-power-manager yay zsh fix_xcursor
+    alacritty autorandr blurlock code copyq dunst feh fzf google-chrome-stable i3exit
+    jgmenu_run ksnip lightdm nm-applet nvim pavucontrol pcmanfm picom rofi volumeicon
+    xautolock xfce4-power-manager yay zsh
   )
   local cmd
   for cmd in "${commands[@]}"; do

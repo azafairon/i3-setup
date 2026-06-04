@@ -29,6 +29,14 @@ The goal is:
 
 The bootstrap intentionally pins `oh-my-zsh` to a known git commit instead of executing the remote upstream install script at install time.
 
+Package note:
+
+- the official package list uses `neovim` rather than `nvim`
+- wallpaper handling uses `feh` rather than `nitrogen`
+- clipboard manager uses `copyq` rather than `clipit`
+- the categorized app launcher uses `jgmenu` rather than `morc_menu`
+- `pamac-tray` and `fix_xcursor` are not assumed to exist on Endeavour/Arch
+
 ## Assumptions
 
 The script assumes:
@@ -108,7 +116,7 @@ Most useful shortcuts:
 - `Super+Enter`: open terminal
 - `Super+d`: open rofi app launcher
 - `Alt+Tab`: rofi window switcher
-- `Super+z`: categorized app menu
+- `Super+z`: categorized app menu via `jgmenu`
 - `Super+F2`: open Google Chrome
 - `Super+F3`: open PCManFM
 - `Super+Shift+F3`: open PCManFM as root via `pkexec`
