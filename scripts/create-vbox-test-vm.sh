@@ -184,7 +184,7 @@ VBoxManage modifyvm "$VM_NAME" \
   --vram "$VM_VRAM_MB" \
   --audio-enabled off \
   --graphicscontroller vmsvga \
-  --accelerate3d on \
+  --accelerate3d off \
   --nic1 nat \
   --clipboard-mode bidirectional \
   --draganddrop bidirectional

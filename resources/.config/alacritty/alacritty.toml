@@ -62,8 +62,8 @@ white   = "#bfe6ee"
 padding.x = 10
 padding.y = 12
 dynamic_padding = true
-opacity = 0.70     # smoky glass; raise to 1.0 if you don’t like transparency
-blur = true        # works on macOS Wayland/Compositors that support it
+opacity = 1.0
+blur = false
 
 [font]
 normal.family = "JetBrainsMono Nerd Font Mono"

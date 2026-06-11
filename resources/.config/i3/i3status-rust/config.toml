@@ -3,7 +3,7 @@ full = " $full_error_message "
 short = " $full_error_message.str(w:170, rot_interval:0.2) "
 
 [icons]
-icons = "unicode"
+icons = "none"
 [icons.overrides]
 no_wifi = "x"
 bell-slash = "!"
