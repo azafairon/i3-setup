@@ -18,6 +18,8 @@ INTERACTIVE=0
 DRIVER_PACKAGES=()
 GPU_VENDORS=()
 GPU_NOTICES=()
+KERNEL_PACKAGES=()
+NVIDIA_PROMPT_HANDLED=0
 
 log() {
   printf '\n[%s] %s\n' "i3-setup" "$1"
@@ -103,6 +105,68 @@ append_gpu_notice() {
     [ "$existing" != "$notice" ] || return
   done
   GPU_NOTICES+=("$notice")
+}
+
+detect_kernel_packages() {
+  local pkg
+
+  command -v pacman >/dev/null 2>&1 || return
+
+  while read -r pkg; do
+    [ -n "$pkg" ] || continue
+    KERNEL_PACKAGES+=("$pkg")
+  done < <(pacman -Qq 2>/dev/null | rg '^(linux|linux-lts|linux-zen|linux-hardened|linux-rt|linux-rt-lts)$' || true)
+}
+
+configure_nvidia_packages() {
+  local kernel
+  local default_answer=yes
+  local nvidia_packages=()
+  local needs_dkms=0
+
+  for kernel in "${KERNEL_PACKAGES[@]:-}"; do
+    case "$kernel" in
+      linux)
+        nvidia_packages+=("nvidia-open")
+        ;;
+      linux-lts)
+        nvidia_packages+=("nvidia-open-lts")
+        ;;
+      linux-zen|linux-hardened|linux-rt|linux-rt-lts)
+        needs_dkms=1
+        ;;
+    esac
+  done
+
+  NVIDIA_PROMPT_HANDLED=1
+
+  if [ "${#nvidia_packages[@]}" -gt 0 ]; then
+    append_driver_package nvidia-utils
+    local pkg
+    for pkg in "${nvidia_packages[@]}"; do
+      append_driver_package "$pkg"
+    done
+  fi
+
+  if [ "$needs_dkms" -eq 1 ]; then
+    append_gpu_notice "NVIDIA detected with non-default kernel(s): install nvidia-open-dkms and the matching kernel headers manually if you want NVIDIA support on those kernels."
+  fi
+
+  if [ "${#nvidia_packages[@]}" -eq 0 ] && [ "$needs_dkms" -eq 0 ]; then
+    append_gpu_notice "NVIDIA detected: no supported kernel package was detected automatically; choose the matching NVIDIA package manually after install."
+  fi
+
+  if [ "${#nvidia_packages[@]}" -gt 0 ] && ! prompt_yes_no "Install recommended NVIDIA packages for detected kernels: ${DRIVER_PACKAGES[*]}" "$default_answer"; then
+    local filtered_packages=()
+    local pkg
+    for pkg in "${DRIVER_PACKAGES[@]}"; do
+      case "$pkg" in
+        nvidia-utils|nvidia-open|nvidia-open-lts) ;;
+        *) filtered_packages+=("$pkg") ;;
+      esac
+    done
+    DRIVER_PACKAGES=("${filtered_packages[@]}")
+  fi
 }
 
 read_package_list() {
@@ -255,7 +319,7 @@ configure_driver_packages() {
   for vendor in "${GPU_VENDORS[@]}"; do
     case "$vendor" in
       nvidia)
-        append_gpu_notice "NVIDIA detected: choose kernel-specific NVIDIA packages manually after install (for example nvidia-open, nvidia-open-lts, or nvidia-open-dkms with nvidia-utils)."
+        configure_nvidia_packages
         ;;
       amd)
         append_gpu_notice "AMD detected: mesa is already installed; add vulkan-radeon later only if you need Vulkan explicitly."
@@ -286,6 +350,10 @@ configure_driver_packages() {
   fi
 
   [ "${#DRIVER_PACKAGES[@]}" -gt 0 ] || return
+
+  if [ "$NVIDIA_PROMPT_HANDLED" -eq 1 ] && [ "${#DRIVER_PACKAGES[@]}" -le 2 ]; then
+    return
+  fi
 
   if ! prompt_yes_no "Install recommended detected graphics/guest packages: ${DRIVER_PACKAGES[*]}" "$default_answer"; then
     DRIVER_PACKAGES=()
@@ -465,6 +533,7 @@ main() {
   parse_args "$@"
   detect_distro
   detect_virtualization
+  detect_kernel_packages
   detect_gpu_vendors
   preflight
   log "Detected distro: $DISTRO"
