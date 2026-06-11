@@ -189,6 +189,11 @@ Status bar defaults:
 
 The fastest safe way to test this is in VirtualBox.
 
+There are two workflows:
+
+1. one-off full install test: create VM, install minimal EndeavourOS, run bootstrap
+2. fast repeat test: create one minimal base VM once, snapshot it, then clone from that snapshot for every new bootstrap run
+
 This is the intended iteration loop while tuning the bootstrap:
 
 1. create a fresh VM
@@ -196,6 +201,70 @@ This is the intended iteration loop while tuning the bootstrap:
 3. run `./install.sh`
 4. verify the result
 5. if something is wrong, destroy the VM and create a new one
+
+## Fast Template Workflow
+
+This is the recommended workflow once you start iterating heavily.
+
+### 1. Create the Base VM Once
+
+Create a VM dedicated to the base OS install:
+
+```bash
+./scripts/create-vbox-test-vm.sh --vm-name i3-setup-base --start
+```
+
+Then inside the VM:
+
+1. install minimal EndeavourOS
+2. create your normal sudo-enabled user
+3. reboot into the installed system
+4. do not run `./install.sh` yet
+5. power the VM off cleanly
+
+### 2. Snapshot the Minimal Base VM
+
+On the host:
+
+```bash
+./scripts/snapshot-vbox-base-vm.sh i3-setup-base minimal-endeavouros
+```
+
+You only need to do this again if you want to rebuild the base install.
+
+### 3. Clone a Fresh Test VM from the Snapshot
+
+For each bootstrap test run:
+
+```bash
+./scripts/clone-vbox-test-vm.sh --force --start
+```
+
+By default this clones:
+
+- base VM: `i3-setup-base`
+- snapshot: `minimal-endeavouros`
+- test VM: `i3-setup-test`
+
+Inside the cloned VM, run:
+
+```bash
+sudo pacman -S --needed git
+git clone <your-repo-url>
+cd i3-setup
+./install.sh
+```
+
+### 4. Throw Away the Clone and Repeat
+
+When you want another clean test machine:
+
+```bash
+./scripts/reset-vbox-test-vm.sh i3-setup-test
+./scripts/clone-vbox-test-vm.sh --force --start
+```
+
+This is much faster than reinstalling EndeavourOS every time.
 
 ### 1. Download an ISO
 
@@ -261,6 +330,8 @@ This creates a VM with:
 - 4 GB RAM
 - 2 CPUs
 - 32 GB disk
+- 128 MB video RAM
+- VMSVGA with 3D acceleration enabled
 - NAT networking
 - the ISO attached and ready to boot
 
@@ -344,6 +415,8 @@ Recreate it from scratch:
 
 That is the fastest clean-slate loop for repeated testing.
 
+If you already created a base VM snapshot, use the template workflow above instead. It is much faster than repeating the full OS install.
+
 ## Full Example Session
 
 On the host machine:
@@ -376,3 +449,4 @@ cd /path/to/i3-setup
 - Hardware-specific values were removed from the shipped config where they would break portability.
 - If a package or command is required by the default config, the bootstrap should install it instead of assuming it already exists.
 - The VirtualBox helper creates the VM only. The EndeavourOS install itself is still done through the normal graphical installer inside the VM.
+- For fast iteration, prefer a base VM snapshot plus linked clones over reinstalling EndeavourOS every time.

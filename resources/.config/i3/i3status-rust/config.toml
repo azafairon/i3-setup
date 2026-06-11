@@ -3,10 +3,10 @@ full = " $full_error_message "
 short = " $full_error_message.str(w:170, rot_interval:0.2) "
 
 [icons]
-icons = "material-nf"
+icons = "unicode"
 [icons.overrides]
-no_wifi = "\U000f05aa" # nf-md-wifi_off
-bell-slash = "\U000f00a0" # nf-md-bell_sleep
+no_wifi = "x"
+bell-slash = "!"
 degree = "\u00B0"
 
 [theme]

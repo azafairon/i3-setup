@@ -4,6 +4,7 @@ set -euo pipefail
 VM_DISK_SIZE_MB=${VM_DISK_SIZE_MB:-32768}
 VM_MEMORY_MB=${VM_MEMORY_MB:-4096}
 VM_CPUS=${VM_CPUS:-2}
+VM_VRAM_MB=${VM_VRAM_MB:-128}
 ISO_DOWNLOAD_DIR=${ISO_DOWNLOAD_DIR:-$HOME/Downloads/endeavouros}
 ENDEAVOUROS_MIRROR_INDEX_URL=${ENDEAVOUROS_MIRROR_INDEX_URL:-https://mirror.rznet.fr/endeavouros/iso/}
 START_VM=0
@@ -26,6 +27,7 @@ Environment overrides:
   VM_DISK_SIZE_MB   Default: 32768
   VM_MEMORY_MB      Default: 4096
   VM_CPUS           Default: 2
+  VM_VRAM_MB        Default: 128
   ISO_DOWNLOAD_DIR  Default: ~/Downloads/endeavouros
 EOF
 }
@@ -179,9 +181,10 @@ VBoxManage createvm --name "$VM_NAME" --ostype ArchLinux_64 --register
 VBoxManage modifyvm "$VM_NAME" \
   --memory "$VM_MEMORY_MB" \
   --cpus "$VM_CPUS" \
-  --vram 32 \
+  --vram "$VM_VRAM_MB" \
   --audio-enabled off \
   --graphicscontroller vmsvga \
+  --accelerate3d on \
   --nic1 nat \
   --clipboard-mode bidirectional \
   --draganddrop bidirectional

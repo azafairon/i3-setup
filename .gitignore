@@ -1,0 +1,10 @@
+*.log
+*.webm
+
+VirtualBox VMs/
+
+# Local VM/test artifacts
+*.iso
+*.iso.sha512
+*.iso.sha512sum
+*.iso.sig

@@ -38,6 +38,9 @@ neovim
 code
 alacritty
 zsh
+xorg-server
+xorg-xinit
+xorg-xrandr
 xorg-xbacklight
 xorg-xdpyinfo
 xss-lock
