@@ -57,6 +57,19 @@ chmod +x install.sh
 ./install.sh
 ```
 
+For VirtualBox or weak/unsupported graphics paths, use:
+
+```bash
+./install.sh --safe-graphics
+```
+
+Safe graphics mode keeps the same general setup but:
+
+- disables picom autostart
+- makes Alacritty opaque
+- disables blur in Alacritty
+- changes the `Super+Ctrl+t` binding into a notice instead of trying to launch picom
+
 If `git` is not installed yet on the fresh machine:
 
 ```bash
@@ -331,7 +344,7 @@ This creates a VM with:
 - 2 CPUs
 - 32 GB disk
 - 128 MB video RAM
-- VMSVGA with 3D acceleration enabled
+- VMSVGA with 3D acceleration disabled for stability
 - NAT networking
 - the ISO attached and ready to boot
 

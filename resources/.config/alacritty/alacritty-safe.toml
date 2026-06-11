@@ -1,0 +1,91 @@
+[scrolling]
+history = 100000
+multiplier = 5
+
+[colors.primary]
+background = "#0a0f14"
+foreground = "#d2f8ff"
+
+[colors.cursor]
+text = "#0a0f14"
+cursor = "#00ff9c"
+
+[colors.vi_mode_cursor]
+text = "#0a0f14"
+cursor = "#00e5ff"
+
+[colors.search.matches]
+foreground = "#0a0f14"
+background = "#faff00"
+
+[colors.search.focused_match]
+foreground = "#0a0f14"
+background = "#ff00e6"
+
+[colors.selection]
+text = "#0a0f14"
+background = "#00e5ff"
+
+[colors.normal]
+black = "#121821"
+red = "#ff3b3b"
+green = "#00ff9c"
+yellow = "#faff00"
+blue = "#00a3ff"
+magenta = "#ff00e6"
+cyan = "#00e5ff"
+white = "#d2f8ff"
+
+[colors.bright]
+black = "#27313f"
+red = "#ff5c57"
+green = "#00ffa9"
+yellow = "#ffff66"
+blue = "#33b7ff"
+magenta = "#ff33f0"
+cyan = "#33f1ff"
+white = "#ffffff"
+
+[colors.dim]
+black = "#0f141b"
+red = "#c94242"
+green = "#28d89e"
+yellow = "#d6d65e"
+blue = "#2a93d8"
+magenta = "#d52fd2"
+cyan = "#28cfe0"
+white = "#bfe6ee"
+
+[window]
+padding.x = 10
+padding.y = 12
+dynamic_padding = true
+opacity = 1.0
+blur = false
+
+[font]
+normal.family = "JetBrainsMonoNL Nerd Font"
+bold.family = "JetBrainsMonoNL Nerd Font"
+italic.family = "JetBrainsMonoNL Nerd Font"
+size = 14
+
+[terminal]
+osc52 = "OnlyCopy"
+
+[cursor]
+style = { shape = "Beam", blinking = "On" }
+thickness = 0.2
+
+[bell]
+animation = "EaseOutExpo"
+duration = 0
+color = "#ff00e6"
+
+[selection]
+semantic_escape_chars = ",│`|:\"' ()[]{}<>"
+
+[mouse]
+hide_when_typing = true
+
+[colors]
+draw_bold_text_with_bright_colors = true

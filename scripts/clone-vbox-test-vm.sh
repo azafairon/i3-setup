@@ -102,7 +102,7 @@ VBoxManage clonevm "$BASE_VM_NAME" \
 VBoxManage modifyvm "$CLONE_VM_NAME" \
   --vram "$VM_VRAM_MB" \
   --graphicscontroller vmsvga \
-  --accelerate3d on
+  --accelerate3d off
 
 printf 'Created linked clone: %s\n' "$CLONE_VM_NAME"
 printf 'Base VM: %s\n' "$BASE_VM_NAME"

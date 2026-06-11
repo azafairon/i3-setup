@@ -12,6 +12,7 @@ OH_MY_ZSH_REPO="https://github.com/ohmyzsh/ohmyzsh.git"
 OH_MY_ZSH_COMMIT="70ad5e3df8f7bed68aa6672029496926e632aedd"
 
 BACKUP_CREATED=0
+SAFE_GRAPHICS=0
 
 log() {
   printf '\n[%s] %s\n' "i3-setup" "$1"
@@ -24,6 +25,32 @@ die() {
 
 require_file() {
   [ -e "$1" ] || die "Missing required path: $1"
+}
+
+parse_args() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --safe-graphics|--vm-safe)
+        SAFE_GRAPHICS=1
+        ;;
+      -h|--help)
+        cat <<'EOF'
+Usage:
+  ./install.sh [--safe-graphics]
+
+Options:
+  --safe-graphics, --vm-safe
+      Use a safer graphics profile for VMs and weak/unsupported GPU paths.
+      This disables picom autostart and uses an opaque Alacritty config.
+EOF
+        exit 0
+        ;;
+      *)
+        die "Unknown option: $1"
+        ;;
+    esac
+    shift
+  done
 }
 
 read_package_list() {
@@ -176,6 +203,12 @@ install_user_configs() {
   install_file_with_backup "$RESOURCES_DIR/.bashrc" "$HOME/.bashrc"
   install_file_with_backup "$RESOURCES_DIR/.profile" "$HOME/.profile"
   install_file_with_backup "$RESOURCES_DIR/.gtkrc-2.0" "$HOME/.gtkrc-2.0"
+
+  if [ "$SAFE_GRAPHICS" -eq 1 ]; then
+    log "Applying safe graphics profile"
+    install_file_with_backup "$RESOURCES_DIR/.config/alacritty/alacritty-safe.toml" "$HOME/.config/alacritty/alacritty.toml"
+    install_file_with_backup "$RESOURCES_DIR/.config/i3/config-safe" "$HOME/.config/i3/config"
+  fi
 }
 
 install_system_configs() {
@@ -253,6 +286,7 @@ postflight_checks() {
 }
 
 main() {
+  parse_args "$@"
   detect_distro
   preflight
   log "Detected distro: $DISTRO"
