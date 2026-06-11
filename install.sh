@@ -17,6 +17,7 @@ VIRT_TYPE=none
 INTERACTIVE=0
 DRIVER_PACKAGES=()
 GPU_VENDORS=()
+GPU_NOTICES=()
 
 log() {
   printf '\n[%s] %s\n' "i3-setup" "$1"
@@ -93,6 +94,15 @@ append_driver_package() {
     [ "$existing" != "$pkg" ] || return
   done
   DRIVER_PACKAGES+=("$pkg")
+}
+
+append_gpu_notice() {
+  local notice=$1
+  local existing
+  for existing in "${GPU_NOTICES[@]:-}"; do
+    [ "$existing" != "$notice" ] || return
+  done
+  GPU_NOTICES+=("$notice")
 }
 
 read_package_list() {
@@ -245,16 +255,13 @@ configure_driver_packages() {
   for vendor in "${GPU_VENDORS[@]}"; do
     case "$vendor" in
       nvidia)
-        append_driver_package nvidia
-        append_driver_package nvidia-utils
-        append_driver_package nvidia-settings
-        default_answer=yes
+        append_gpu_notice "NVIDIA detected: choose kernel-specific NVIDIA packages manually after install (for example nvidia-open, nvidia-open-lts, or nvidia-open-dkms with nvidia-utils)."
         ;;
       amd)
-        append_driver_package vulkan-radeon
+        append_gpu_notice "AMD detected: mesa is already installed; add vulkan-radeon later only if you need Vulkan explicitly."
         ;;
       intel)
-        append_driver_package vulkan-intel
+        append_gpu_notice "Intel detected: mesa is already installed; add vulkan-intel later only if you need Vulkan explicitly."
         ;;
       virtualbox|oracle)
         append_driver_package virtualbox-guest-utils
@@ -262,13 +269,21 @@ configure_driver_packages() {
         ;;
       vmware)
         append_driver_package open-vm-tools
-        append_driver_package xf86-video-vmware
+        default_answer=yes
         ;;
       virtio|kvm|qemu)
         append_driver_package qemu-guest-agent
+        default_answer=yes
         ;;
     esac
   done
+
+  if [ "${#GPU_NOTICES[@]}" -gt 0 ]; then
+    local notice
+    for notice in "${GPU_NOTICES[@]}"; do
+      log "$notice"
+    done
+  fi
 
   [ "${#DRIVER_PACKAGES[@]}" -gt 0 ] || return
 
@@ -310,14 +325,7 @@ install_official_packages() {
 }
 
 install_virtualization_packages() {
-  case "$VIRT_TYPE" in
-    oracle|virtualbox)
-      if ! command -v VBoxClient >/dev/null 2>&1; then
-        log "Installing VirtualBox guest utilities"
-        sudo pacman -S --needed --noconfirm virtualbox-guest-utils
-      fi
-      ;;
-  esac
+  :
 }
 
 bootstrap_yay_if_needed() {
@@ -400,7 +408,19 @@ enable_services() {
 
   case "$VIRT_TYPE" in
     oracle|virtualbox)
-      sudo systemctl enable vboxservice.service
+      if pacman -Q virtualbox-guest-utils >/dev/null 2>&1; then
+        sudo systemctl enable vboxservice.service
+      fi
+      ;;
+    vmware)
+      if pacman -Q open-vm-tools >/dev/null 2>&1; then
+        sudo systemctl enable vmtoolsd.service
+      fi
+      ;;
+    qemu|kvm|virtio)
+      if pacman -Q qemu-guest-agent >/dev/null 2>&1; then
+        sudo systemctl enable qemu-guest-agent.service
+      fi
       ;;
   esac
 }

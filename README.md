@@ -64,6 +64,14 @@ During install, the script will interactively ask about:
 - using a safe graphics profile for VMs or weak/unsupported GPU paths
 - installing recommended graphics/guest packages based on detected hardware or virtualization
 
+Driver notes:
+
+- VirtualBox guests can install `virtualbox-guest-utils`
+- VMware guests can install `open-vm-tools`
+- QEMU/KVM guests can install `qemu-guest-agent`
+- NVIDIA is detected, but not auto-installed blindly because the correct package depends on the kernel strategy (`nvidia-open`, `nvidia-open-lts`, `nvidia-open-dkms`, etc.)
+- AMD and Intel already work with the baseline `mesa` stack; Vulkan packages are left as optional follow-up installs
+
 For non-interactive or explicit use, you can still force the safe graphics profile with:
 
 ```bash
