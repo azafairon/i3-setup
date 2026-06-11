@@ -13,6 +13,11 @@ return {
   },
 
   {
+    "nvim-treesitter/nvim-treesitter",
+    opts = require "configs.treesitter",
+  },
+
+  {
     "mrcjkb/rustaceanvim",
     version = "^6",
     lazy = false,
