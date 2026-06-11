@@ -331,7 +331,7 @@ This creates a VM with:
 - 2 CPUs
 - 32 GB disk
 - 128 MB video RAM
-- VMSVGA with 3D acceleration disabled by default for stability
+- VMSVGA with 3D acceleration enabled
 - NAT networking
 - the ISO attached and ready to boot
 
