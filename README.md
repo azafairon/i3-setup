@@ -144,6 +144,8 @@ Most useful shortcuts:
 
 - `Super+Enter`: open terminal
 - `Super+d`: open rofi app launcher
+- `Super+F1`: show shortcut popup
+- `Super+/`: show shortcut popup
 - `Alt+Tab`: rofi window switcher
 - `Super+z`: categorized app menu via `jgmenu`
 - `Super+F2`: open Google Chrome

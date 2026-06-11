@@ -1,0 +1,119 @@
+#!/bin/sh
+
+config_file="${XDG_CONFIG_HOME:-$HOME/.config}/i3/config"
+rofi_config="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/rofikeyhint.rasi"
+
+[ -r "$config_file" ] || exit 1
+
+awk '
+function pretty_key(key) {
+  gsub(/\$mod1/, "Alt", key)
+  gsub(/\$mod/, "Super", key)
+  gsub(/Mod1/, "Alt", key)
+  gsub(/Shift/, "Shift", key)
+  gsub(/Ctrl/, "Ctrl", key)
+  gsub(/Return/, "Enter", key)
+  gsub(/minus/, "-", key)
+  gsub(/bracketleft/, "[", key)
+  gsub(/bracketright/, "]", key)
+  return key
+}
+
+function infer_category(raw, action) {
+  if (raw ~ /i3-keyhints/) return "Help"
+  if (raw ~ /rofi -modi drun|jgmenu_run|google-chrome-stable|pcmanfm|ksnip|alsamixer|xkill/) return "Applications"
+  if (action ~ /^focus |^move |^floating toggle$|^fullscreen toggle$|^focus mode_toggle$|^focus parent$|^sticky toggle$|^kill$/) return "Windows"
+  if (action ~ /^split h|^split v|^layout |^border /) return "Layout"
+  if (action ~ /^workspace |^move container to workspace |^move workspace to output /) return "Workspaces"
+  if (action ~ /^move scratchpad$|^scratchpad show$|^mode "resize"$|^mode \$mode_gaps/) return "Workspace Tools"
+  if (raw ~ /i3exit lock|i3exit suspend|i3exit switch_user|i3exit logout|i3exit hibernate|i3exit reboot|i3exit shutdown|blurlock/ || action ~ /^reload$|^restart$|^bar mode toggle$/) return "System"
+  return "Other"
+}
+
+function pretty_action(action, raw) {
+  if (raw ~ /rofi -modi drun/) return "App launcher"
+  if (raw ~ /rofi -show window/) return "Window switcher"
+  if (raw ~ /i3-keyhints/) return "Show shortcuts"
+  if (raw ~ /jgmenu_run/) return "Category menu"
+  if (raw ~ /google-chrome-stable/) return "Chrome"
+  if (raw ~ /pkexec env DISPLAY=.*pcmanfm/) return "File manager (root)"
+  if (raw ~ /pcmanfm/) return "File manager"
+  if (raw ~ /alacritty -e alsamixer/) return "Alsamixer"
+  if (raw ~ /^exec alacritty$/ || raw ~ /exec --no-startup-id alacritty$/) return "Terminal"
+  if (raw ~ /ksnip/) return "Screenshot"
+  if (raw ~ /xkill/) return "xkill"
+  if (raw ~ /picom/) return "Toggle compositor"
+  if (raw ~ /killall dunst/) return "Restart notifications"
+  if (raw ~ /i3exit lock/) return "Lock"
+  if (raw ~ /i3exit suspend/) return "Suspend"
+  if (raw ~ /i3exit switch_user/) return "Switch user"
+  if (raw ~ /i3exit logout/) return "Logout"
+  if (raw ~ /i3exit hibernate/) return "Hibernate"
+  if (raw ~ /i3exit reboot/) return "Reboot"
+  if (raw ~ /i3exit shutdown/) return "Shutdown"
+  if (action ~ /^focus /) {
+    sub(/^focus /, "", action)
+    return "Focus " action
+  }
+  if (action ~ /^move /) return action
+  if (action ~ /^split h/) return "Split horizontally"
+  if (action ~ /^split v/) return "Split vertically"
+  if (action ~ /^kill$/) return "Close window"
+  if (action ~ /^fullscreen toggle$/) return "Toggle fullscreen"
+  if (action ~ /^layout stacking$/) return "Stacking layout"
+  if (action ~ /^layout tabbed$/) return "Tabbed layout"
+  if (action ~ /^layout toggle split$/) return "Toggle split layout"
+  if (action ~ /^floating toggle$/) return "Toggle floating"
+  if (action ~ /^focus mode_toggle$/) return "Toggle focus mode"
+  if (action ~ /^sticky toggle$/) return "Toggle sticky"
+  if (action ~ /^focus parent$/) return "Focus parent"
+  if (action ~ /^move scratchpad$/) return "Move to scratchpad"
+  if (action ~ /^scratchpad show$/) return "Show scratchpad"
+  if (action ~ /^workspace next$/) return "Next workspace"
+  if (action ~ /^workspace prev$/) return "Previous workspace"
+  if (action ~ /^workspace back_and_forth$/) return "Previous workspace"
+  if (action ~ /^reload$/) return "Reload i3"
+  if (action ~ /^restart$/) return "Restart i3"
+  if (action ~ /^bar mode toggle$/) return "Toggle bar"
+  if (action ~ /^mode /) return "Enter mode"
+  if (action ~ /^border /) return action
+  if (action ~ /^workspace \$ws[0-9]+$/) {
+    gsub(/^workspace \$ws/, "Workspace ", action)
+    return action
+  }
+  if (action ~ /^move container to workspace \$ws[0-9]+/) {
+    gsub(/^move container to workspace \$ws/, "Move window to workspace ", action)
+    sub(/; workspace \$ws[0-9]+$/, " and follow", action)
+    return action
+  }
+  return raw
+}
+
+/^bindsym / {
+  raw = $0
+  sub(/^bindsym /, "", raw)
+  key = raw
+  sub(/ .*/, "", key)
+  action = raw
+  sub(/^[^ ]+ /, "", action)
+  sub(/^--release /, "", action)
+  sub(/^exec --no-startup-id /, "exec ", action)
+  sub(/^exec /, "", action)
+  gsub(/\$ws([0-9]+)/, "\\1", action)
+  category = infer_category(raw, action)
+  printf "%s\t%s\t%s\n", category, pretty_key(key), pretty_action(action, raw)
+}
+' "$config_file" | sort -t "	" -k1,1 -k2,2 | awk -F "\t" '
+BEGIN { current = "" }
+{
+  category = $1
+  key = $2
+  action = $3
+  if (category != current) {
+    if (current != "") print ""
+    print category "\t"
+    current = category
+  }
+  print "  " key "\t" action
+}
+' | rofi -dmenu -i -p "Shortcuts" -no-custom -config "$rofi_config"
