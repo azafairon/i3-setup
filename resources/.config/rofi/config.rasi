@@ -1,1 +1,10 @@
- @theme "~/.local/share/rofi/themes/arc_dark_transparent_colors.rasi"
+* {
+  background: #1b1f27ee;
+  background-alt: #242a35ff;
+  foreground: #d2f8ff;
+  selected: #2f8fdbff;
+  selected-foreground: #ffffff;
+  border: #00e5ffff;
+  urgent: #ff3b3bff;
+  active: #00ff9cff;
+}

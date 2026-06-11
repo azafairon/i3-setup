@@ -14,123 +14,73 @@ configuration {
 }
 
 @import "~/.config/rofi/config.rasi"
-/* Insert theme modifications after this */
 
 window {
     background-color: @background;
-    border:           0;
-    padding:          30;
+    border:           2px;
+    border-color:     @border;
+    padding:          16px;
 }
-listview {
-    lines:   10;
-    columns: 3;
-}
+
 mainbox {
-    border:  0;
-    padding: 0;
+    spacing: 12px;
 }
-message {
-    border:       2px 0px 0px;
-    border-color: @separatorcolor;
-    padding:      1px;
+
+inputbar {
+    background-color: @background-alt;
+    text-color:       @foreground;
+    padding:          10px;
+    border:           0px;
 }
-textbox {
+
+prompt,
+entry,
+textbox,
+textbox-prompt-colon,
+case-indicator {
     text-color: @foreground;
 }
+
+entry {
+    placeholder: "Search apps...";
+    placeholder-color: #7aa6b8ff;
+}
+
 listview {
-    fixed-height: 0;
-    border:       8px 0px 0px;
-    border-color: @separatorcolor;
+    lines:        10;
+    columns:      3;
+    fixed-height: false;
     spacing:      8px;
     scrollbar:    false;
-    padding:      2px 0px 0px;
 }
+
 element {
-    border:  0;
-    padding: 1px;
+    padding:          8px;
+    border:           0px;
+    background-color: @background-alt;
 }
+
 element-text {
-    background-color: inherit;
-    text-color:       inherit;
+    background-color: transparent;
+    text-color:       @foreground;
 }
+
 element.normal.normal {
-    background-color: @normal-background;
-    text-color:       @normal-foreground;
+    background-color: @background-alt;
+    text-color:       @foreground;
 }
-element.normal.urgent {
-    background-color: @urgent-background;
-    text-color:       @urgent-foreground;
-}
-element.normal.active {
-    background-color: @active-background;
-    text-color:       @active-foreground;
-}
+
 element.selected.normal {
-    background-color: @selected-normal-background;
-    text-color:       @selected-normal-foreground;
+    background-color: @selected;
+    text-color:       @selected-foreground;
 }
-element.selected.urgent {
-    background-color: @selected-urgent-background;
-    text-color:       @selected-urgent-foreground;
-}
-element.selected.active {
-    background-color: @selected-active-background;
-    text-color:       @selected-active-foreground;
-}
-element.alternate.normal {
-    background-color: @alternate-normal-background;
-    text-color:       @alternate-normal-foreground;
-}
-element.alternate.urgent {
-    background-color: @alternate-urgent-background;
-    text-color:       @alternate-urgent-foreground;
-}
-element.alternate.active {
-    background-color: @alternate-active-background;
-    text-color:       @alternate-active-foreground;
-}
-scrollbar {
-    width:        4px;
-    border:       0;
-    handle-color: @normal-foreground;
-    handle-width: 8px;
-    padding:      0;
-}
-mode-switcher {
-    border:       2px 0px 0px;
-    border-color: @separatorcolor;
-}
-button {
-    spacing:    0;
-    text-color: @normal-foreground;
-}
-button.selected {
-    background-color: @selected-normal-background;
-    text-color:       @selected-normal-foreground;
-}
+
 inputbar {
-    spacing:    0;
-    text-color: @normal-foreground;
-    padding:    1px;
+    children: [ prompt, textbox-prompt-colon, entry, case-indicator ];
 }
-case-indicator {
-    spacing:    0;
-    text-color: @normal-foreground;
-}
-entry {
-    spacing:    0;
-    text-color: @normal-foreground;
-}
-prompt {
-    spacing:    0;
-    text-color: @normal-foreground;
-}
-inputbar {
-    children:   [ prompt,textbox-prompt-colon,entry,case-indicator ];
-}
+
 textbox-prompt-colon {
-    expand:     false;
-    str:        ":";
-    margin:     0px 0.3em 0em 0em;
-    text-color: @normal-foreground;
+    expand: false;
+    str:    ":";
+    margin: 0px 0.3em 0em 0em;
 }
