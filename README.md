@@ -70,7 +70,8 @@ Driver notes:
 - VMware guests can install `open-vm-tools`
 - QEMU/KVM guests can install `qemu-guest-agent`
 - NVIDIA is detected with kernel-aware suggestions (`nvidia-open`, `nvidia-open-lts`, or manual `nvidia-open-dkms` follow-up depending on the installed kernel)
-- AMD and Intel already work with the baseline `mesa` stack; Vulkan packages are left as optional follow-up installs
+- AMD is detected explicitly; `mesa` remains the baseline and `vulkan-radeon` is offered as an optional prompt
+- Intel is detected explicitly; `mesa` remains the baseline and `vulkan-intel` is offered as an optional prompt
 
 For non-interactive or explicit use, you can still force the safe graphics profile with:
 

@@ -20,6 +20,8 @@ GPU_VENDORS=()
 GPU_NOTICES=()
 KERNEL_PACKAGES=()
 NVIDIA_PROMPT_HANDLED=0
+AMD_PROMPT_HANDLED=0
+INTEL_PROMPT_HANDLED=0
 
 log() {
   printf '\n[%s] %s\n' "i3-setup" "$1"
@@ -98,6 +100,27 @@ append_driver_package() {
   DRIVER_PACKAGES+=("$pkg")
 }
 
+is_nvidia_driver_package() {
+  case "$1" in
+    nvidia-utils|nvidia-open|nvidia-open-lts) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_amd_driver_package() {
+  case "$1" in
+    vulkan-radeon) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_intel_driver_package() {
+  case "$1" in
+    vulkan-intel) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
 append_gpu_notice() {
   local notice=$1
   local existing
@@ -160,10 +183,37 @@ configure_nvidia_packages() {
     local filtered_packages=()
     local pkg
     for pkg in "${DRIVER_PACKAGES[@]}"; do
-      case "$pkg" in
-        nvidia-utils|nvidia-open|nvidia-open-lts) ;;
-        *) filtered_packages+=("$pkg") ;;
-      esac
+      is_nvidia_driver_package "$pkg" || filtered_packages+=("$pkg")
+    done
+    DRIVER_PACKAGES=("${filtered_packages[@]}")
+  fi
+}
+
+configure_amd_packages() {
+  AMD_PROMPT_HANDLED=1
+  append_gpu_notice "AMD detected: mesa already covers the baseline graphics stack."
+
+  append_driver_package vulkan-radeon
+  if ! prompt_yes_no "Install optional AMD Vulkan package: vulkan-radeon" "no"; then
+    local filtered_packages=()
+    local pkg
+    for pkg in "${DRIVER_PACKAGES[@]}"; do
+      is_amd_driver_package "$pkg" || filtered_packages+=("$pkg")
+    done
+    DRIVER_PACKAGES=("${filtered_packages[@]}")
+  fi
+}
+
+configure_intel_packages() {
+  INTEL_PROMPT_HANDLED=1
+  append_gpu_notice "Intel detected: mesa already covers the baseline graphics stack."
+
+  append_driver_package vulkan-intel
+  if ! prompt_yes_no "Install optional Intel Vulkan package: vulkan-intel" "no"; then
+    local filtered_packages=()
+    local pkg
+    for pkg in "${DRIVER_PACKAGES[@]}"; do
+      is_intel_driver_package "$pkg" || filtered_packages+=("$pkg")
     done
     DRIVER_PACKAGES=("${filtered_packages[@]}")
   fi
@@ -322,10 +372,10 @@ configure_driver_packages() {
         configure_nvidia_packages
         ;;
       amd)
-        append_gpu_notice "AMD detected: mesa is already installed; add vulkan-radeon later only if you need Vulkan explicitly."
+        configure_amd_packages
         ;;
       intel)
-        append_gpu_notice "Intel detected: mesa is already installed; add vulkan-intel later only if you need Vulkan explicitly."
+        configure_intel_packages
         ;;
       virtualbox|oracle)
         append_driver_package virtualbox-guest-utils
@@ -351,11 +401,26 @@ configure_driver_packages() {
 
   [ "${#DRIVER_PACKAGES[@]}" -gt 0 ] || return
 
-  if [ "$NVIDIA_PROMPT_HANDLED" -eq 1 ] && [ "${#DRIVER_PACKAGES[@]}" -le 2 ]; then
+  local prompt_packages=()
+  local pkg
+  for pkg in "${DRIVER_PACKAGES[@]}"; do
+    if [ "$NVIDIA_PROMPT_HANDLED" -eq 1 ] && is_nvidia_driver_package "$pkg"; then
+      continue
+    fi
+    if [ "$AMD_PROMPT_HANDLED" -eq 1 ] && is_amd_driver_package "$pkg"; then
+      continue
+    fi
+    if [ "$INTEL_PROMPT_HANDLED" -eq 1 ] && is_intel_driver_package "$pkg"; then
+      continue
+    fi
+    prompt_packages+=("$pkg")
+  done
+
+  if [ "${#prompt_packages[@]}" -eq 0 ]; then
     return
   fi
 
-  if ! prompt_yes_no "Install recommended detected graphics/guest packages: ${DRIVER_PACKAGES[*]}" "$default_answer"; then
+  if ! prompt_yes_no "Install recommended detected graphics/guest packages: ${prompt_packages[*]}" "$default_answer"; then
     DRIVER_PACKAGES=()
   fi
 }
