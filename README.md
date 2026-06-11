@@ -148,6 +148,9 @@ Most useful shortcuts:
 - `Super+F2`: open Google Chrome
 - `Super+F3`: open PCManFM
 - `Super+Shift+F3`: open PCManFM as root via `pkexec`
+- `Super+Shift+w`: alternate Chrome shortcut for VMs/hosts that swallow `Super+F2`
+- `Super+Shift+f`: alternate PCManFM shortcut for VMs/hosts that swallow `Super+F3`
+- `Super+Ctrl+f`: alternate root PCManFM shortcut for VMs/hosts that swallow `Super+Shift+F3`
 - `Print`: open Ksnip screenshot tool
 - `Super+Ctrl+x`: xkill
 

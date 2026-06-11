@@ -27,6 +27,9 @@ bindsym $mod+Ctrl+m exec alacritty -e alsamixer
 bindsym $mod+F2 exec google-chrome-stable
 bindsym $mod+F3 exec pcmanfm
 bindsym $mod+Shift+F3 exec --no-startup-id sh -c 'pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY pcmanfm'
+bindsym $mod+Shift+w exec google-chrome-stable
+bindsym $mod+Shift+f exec pcmanfm
+bindsym $mod+Ctrl+f exec --no-startup-id sh -c 'pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY pcmanfm'
 bindsym $mod+Ctrl+t exec --no-startup-id notify-send 'VM safe mode: picom disabled'
 bindsym $mod+Shift+d --release exec --no-startup-id sh -c 'killall dunst; dunst >/dev/null 2>&1 & sleep 0.2; notify-send "Dunst restarted"'
 bindsym Print exec --no-startup-id ksnip
