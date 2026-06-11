@@ -30,6 +30,17 @@ function infer_category(raw, action) {
   return "Other"
 }
 
+function category_label(category) {
+  if (category == "Applications") return "apps  Applications"
+  if (category == "Windows") return "win   Windows"
+  if (category == "Layout") return "grid  Layout"
+  if (category == "Workspaces") return "desk  Workspaces"
+  if (category == "Workspace Tools") return "tool  Workspace Tools"
+  if (category == "System") return "sys   System"
+  if (category == "Help") return "help  Help"
+  return "misc  Other"
+}
+
 function pretty_action(action, raw) {
   if (raw ~ /rofi -modi drun/) return "App launcher"
   if (raw ~ /rofi -show window/) return "Window switcher"
@@ -111,7 +122,7 @@ BEGIN { current = "" }
   action = $3
   if (category != current) {
     if (current != "") print ""
-    print category "\t"
+    print category_label(category) "\t"
     current = category
   }
   print "  " key "\t" action
