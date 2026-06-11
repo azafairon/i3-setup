@@ -1,0 +1,45 @@
+[error_fullscreen_format]
+full = ""
+short = ""
+
+[icons]
+icons = "none"
+
+[theme]
+theme = "semi-native"
+
+[[block]]
+block = "net"
+interval = 2
+format = " net $speed_down.eng(w:3,p:K)/s "
+format_alt = " net {$signal_strength|?} {$ssid |}via $device "
+inactive_format = " net down "
+
+[[block]]
+block = "disk_space"
+interval = 60
+info_type = "available"
+alert_unit = "GB"
+alert = 10.0
+warning = 15.0
+format = " disk $available.eng(w:5,p:1) "
+
+[[block]]
+block = "cpu"
+interval = 5
+format = " cpu $utilization "
+
+[[block]]
+block = "memory"
+format = " mem $mem_used_percents.eng(w:1) "
+
+[[block]]
+block = "sound"
+driver = "pulseaudio"
+format = " vol {$volume |}"
+device_kind = "sink"
+step_width = 1
+
+[[block]]
+block = "time"
+format = "$timestamp.datetime(f:'%a %d %R') "

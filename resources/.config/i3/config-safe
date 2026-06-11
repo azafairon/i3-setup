@@ -185,7 +185,7 @@ set_from_resource $term_color15 color15
 
 bar {
   i3bar_command i3bar -t
-  status_command i3status-rs ~/.config/i3/i3status-rust/config.toml
+  status_command i3status-rs ~/.config/i3/i3status-rust/config-safe.toml
   position top
   strip_workspace_numbers yes
   tray_output primary
