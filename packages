@@ -38,6 +38,7 @@ neovim
 code
 alacritty
 zsh
+mesa
 xorg-server
 xorg-xinit
 xorg-xrandr

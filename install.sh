@@ -13,6 +13,10 @@ OH_MY_ZSH_COMMIT="70ad5e3df8f7bed68aa6672029496926e632aedd"
 
 BACKUP_CREATED=0
 SAFE_GRAPHICS=0
+VIRT_TYPE=none
+INTERACTIVE=0
+DRIVER_PACKAGES=()
+GPU_VENDORS=()
 
 log() {
   printf '\n[%s] %s\n' "i3-setup" "$1"
@@ -51,6 +55,44 @@ EOF
     esac
     shift
   done
+
+  if [ -t 0 ]; then
+    INTERACTIVE=1
+  fi
+}
+
+prompt_yes_no() {
+  local prompt=$1
+  local default_answer=$2
+  local reply
+
+  if [ "$INTERACTIVE" -ne 1 ]; then
+    [ "$default_answer" = "yes" ]
+    return
+  fi
+
+  while true; do
+    if [ "$default_answer" = "yes" ]; then
+      printf '%s [Y/n] ' "$prompt"
+    else
+      printf '%s [y/N] ' "$prompt"
+    fi
+    read -r reply
+    case ${reply:-} in
+      [Yy]) return 0 ;;
+      [Nn]) return 1 ;;
+      "") [ "$default_answer" = "yes" ] && return 0 || return 1 ;;
+    esac
+  done
+}
+
+append_driver_package() {
+  local pkg=$1
+  local existing
+  for existing in "${DRIVER_PACKAGES[@]:-}"; do
+    [ "$existing" != "$pkg" ] || return
+  done
+  DRIVER_PACKAGES+=("$pkg")
 }
 
 read_package_list() {
@@ -141,6 +183,100 @@ detect_distro() {
   esac
 }
 
+detect_virtualization() {
+  if command -v systemd-detect-virt >/dev/null 2>&1; then
+    VIRT_TYPE=$(systemd-detect-virt 2>/dev/null || true)
+    VIRT_TYPE=${VIRT_TYPE:-none}
+  fi
+}
+
+detect_gpu_vendors() {
+  local vendor
+  local seen=()
+  local path
+
+  for path in /sys/class/drm/card*/device/vendor; do
+    [ -r "$path" ] || continue
+    vendor=$(tr '[:upper:]' '[:lower:]' < "$path")
+    case "$vendor" in
+      0x10de) vendor=nvidia ;;
+      0x1002|0x1022) vendor=amd ;;
+      0x8086) vendor=intel ;;
+      0x80ee) vendor=virtualbox ;;
+      0x15ad) vendor=vmware ;;
+      0x1af4) vendor=virtio ;;
+      *) vendor=unknown ;;
+    esac
+
+    case " ${seen[*]:-} " in
+      *" $vendor "*) ;;
+      *)
+        seen+=("$vendor")
+        GPU_VENDORS+=("$vendor")
+        ;;
+    esac
+  done
+
+  if [ "${#GPU_VENDORS[@]}" -eq 0 ] && [ "$VIRT_TYPE" != "none" ]; then
+    GPU_VENDORS+=("$VIRT_TYPE")
+  fi
+}
+
+configure_graphics_profile() {
+  local default_mode=no
+
+  case "$VIRT_TYPE" in
+    oracle|virtualbox|vmware|qemu|kvm)
+      default_mode=yes
+      ;;
+  esac
+
+  if prompt_yes_no "Use safe graphics profile" "$default_mode"; then
+    SAFE_GRAPHICS=1
+  fi
+}
+
+configure_driver_packages() {
+  local vendor
+  local default_answer=no
+
+  [ "${#GPU_VENDORS[@]}" -gt 0 ] || return
+
+  for vendor in "${GPU_VENDORS[@]}"; do
+    case "$vendor" in
+      nvidia)
+        append_driver_package nvidia
+        append_driver_package nvidia-utils
+        append_driver_package nvidia-settings
+        default_answer=yes
+        ;;
+      amd)
+        append_driver_package vulkan-radeon
+        ;;
+      intel)
+        append_driver_package vulkan-intel
+        ;;
+      virtualbox|oracle)
+        append_driver_package virtualbox-guest-utils
+        default_answer=yes
+        ;;
+      vmware)
+        append_driver_package open-vm-tools
+        append_driver_package xf86-video-vmware
+        ;;
+      virtio|kvm|qemu)
+        append_driver_package qemu-guest-agent
+        ;;
+    esac
+  done
+
+  [ "${#DRIVER_PACKAGES[@]}" -gt 0 ] || return
+
+  if ! prompt_yes_no "Install recommended detected graphics/guest packages: ${DRIVER_PACKAGES[*]}" "$default_answer"; then
+    DRIVER_PACKAGES=()
+  fi
+}
+
 preflight() {
   [ "$(id -u)" -ne 0 ] || die "Run this script as your normal user, not root"
   command -v sudo >/dev/null 2>&1 || die "sudo is required"
@@ -167,7 +303,21 @@ install_bootstrap_packages() {
 install_official_packages() {
   log "Installing official packages"
   read_package_list "$PACKAGES_FILE"
+  if [ "${#DRIVER_PACKAGES[@]}" -gt 0 ]; then
+    PACKAGE_LIST+=("${DRIVER_PACKAGES[@]}")
+  fi
   sudo pacman -S --needed --noconfirm "${PACKAGE_LIST[@]}"
+}
+
+install_virtualization_packages() {
+  case "$VIRT_TYPE" in
+    oracle|virtualbox)
+      if ! command -v VBoxClient >/dev/null 2>&1; then
+        log "Installing VirtualBox guest utilities"
+        sudo pacman -S --needed --noconfirm virtualbox-guest-utils
+      fi
+      ;;
+  esac
 }
 
 bootstrap_yay_if_needed() {
@@ -247,6 +397,12 @@ enable_services() {
   log "Enabling system services"
   sudo systemctl enable NetworkManager.service
   sudo systemctl enable lightdm.service
+
+  case "$VIRT_TYPE" in
+    oracle|virtualbox)
+      sudo systemctl enable vboxservice.service
+      ;;
+  esac
 }
 
 change_default_shell() {
@@ -288,10 +444,19 @@ postflight_checks() {
 main() {
   parse_args "$@"
   detect_distro
+  detect_virtualization
+  detect_gpu_vendors
   preflight
   log "Detected distro: $DISTRO"
+  log "Detected virtualization: $VIRT_TYPE"
+  if [ "${#GPU_VENDORS[@]}" -gt 0 ]; then
+    log "Detected graphics: ${GPU_VENDORS[*]}"
+  fi
+  configure_graphics_profile
+  configure_driver_packages
   install_bootstrap_packages
   install_official_packages
+  install_virtualization_packages
   bootstrap_yay_if_needed
   install_aur_packages
   install_user_configs

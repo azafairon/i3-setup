@@ -31,11 +31,13 @@ The bootstrap intentionally pins `oh-my-zsh` to a known git commit instead of ex
 
 Package note:
 
+- `mesa` is installed as the baseline graphics/OpenGL stack
 - the official package list uses `neovim` rather than `nvim`
 - wallpaper handling uses `feh` rather than `nitrogen`
 - clipboard manager uses `copyq` rather than `clipit`
 - the categorized app launcher uses `jgmenu` rather than `morc_menu`
 - `pamac-tray` and `fix_xcursor` are not assumed to exist on Endeavour/Arch
+- `virtualbox-guest-utils` is installed automatically only when the installer detects VirtualBox
 
 ## Assumptions
 
@@ -57,7 +59,12 @@ chmod +x install.sh
 ./install.sh
 ```
 
-For VirtualBox or weak/unsupported graphics paths, use:
+During install, the script will interactively ask about:
+
+- using a safe graphics profile for VMs or weak/unsupported GPU paths
+- installing recommended graphics/guest packages based on detected hardware or virtualization
+
+For non-interactive or explicit use, you can still force the safe graphics profile with:
 
 ```bash
 ./install.sh --safe-graphics
