@@ -301,13 +301,20 @@ install_system_file_with_backup() {
 copy_tree_contents() {
   local source_dir=$1
   local target_dir=$2
+  local source rel target
+
   mkdir -p "$target_dir"
 
-  local entry
-  for entry in "$source_dir"/* "$source_dir"/.[!.]* "$source_dir"/..?*; do
-    [ -e "$entry" ] || continue
-    install_file_with_backup "$entry" "$target_dir/$(basename -- "$entry")"
-  done
+  while IFS= read -r -d '' source; do
+    rel=${source#"$source_dir"/}
+    mkdir -p "$target_dir/$rel"
+  done < <(find "$source_dir" -type d -print0)
+
+  while IFS= read -r -d '' source; do
+    rel=${source#"$source_dir"/}
+    target="$target_dir/$rel"
+    install_file_with_backup "$source" "$target"
+  done < <(find "$source_dir" \( -type f -o -type l \) -print0)
 }
 
 detect_distro() {

@@ -27,7 +27,7 @@ The goal is:
 - run post-install checks for expected commands and services
 - back up replaced system files under `/var/backups/i3-setup/<timestamp>`
 
-The bootstrap intentionally pins `oh-my-zsh` to a known git commit instead of executing the remote upstream install script at install time.
+The bootstrap pins `oh-my-zsh` to a known git commit on fresh installs instead of executing the remote upstream install script at install time. If `~/.oh-my-zsh` already exists, reruns leave it untouched.
 
 Package note:
 
