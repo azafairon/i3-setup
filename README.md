@@ -107,6 +107,10 @@ The installer is intended to be re-runnable.
 - packages are installed with `--needed`
 - replaced user files are backed up first
 - service enablement is safe to repeat
+- files from `resources/` are installed recursively
+- matching target files are backed up and replaced
+- unrelated files in the same directories are left in place
+- existing `~/.oh-my-zsh` directories are not re-cloned, but the expected plugin links are refreshed
 
 ## Wallpaper
 

@@ -308,13 +308,13 @@ copy_tree_contents() {
   while IFS= read -r -d '' source; do
     rel=${source#"$source_dir"/}
     mkdir -p "$target_dir/$rel"
-  done < <(find "$source_dir" -type d -print0)
+  done < <(find "$source_dir" -mindepth 1 -type d -print0)
 
   while IFS= read -r -d '' source; do
     rel=${source#"$source_dir"/}
     target="$target_dir/$rel"
     install_file_with_backup "$source" "$target"
-  done < <(find "$source_dir" \( -type f -o -type l \) -print0)
+  done < <(find "$source_dir" -mindepth 1 \( -type f -o -type l \) -print0)
 }
 
 detect_distro() {
@@ -473,6 +473,12 @@ bootstrap_yay_if_needed() {
 install_aur_packages() {
   log "Installing AUR packages"
   read_package_list "$AUR_PACKAGES_FILE"
+
+  if [ "${#PACKAGE_LIST[@]}" -eq 0 ]; then
+    log "No AUR packages requested"
+    return
+  fi
+
   yay -S --needed --noconfirm "${PACKAGE_LIST[@]}"
 
   if printf '%s\n' "${PACKAGE_LIST[@]}" | grep -qx 'i3exit'; then
@@ -535,8 +541,22 @@ install_oh_my_zsh() {
   fi
 
   mkdir -p "$HOME/.oh-my-zsh/custom/plugins"
-  ln -sfn /usr/share/zsh/plugins/zsh-syntax-highlighting "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
-  ln -sfn /usr/share/zsh/plugins/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+  link_omz_plugin /usr/share/zsh/plugins/zsh-syntax-highlighting \
+    "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+  link_omz_plugin /usr/share/zsh/plugins/zsh-autosuggestions \
+    "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+}
+
+link_omz_plugin() {
+  local source=$1
+  local target=$2
+
+  if [ -e "$target" ] || [ -L "$target" ]; then
+    backup_target "$target"
+    rm -rf "$target"
+  fi
+
+  ln -s "$source" "$target"
 }
 
 enable_services() {
@@ -631,4 +651,6 @@ main() {
   log "Install complete"
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi
