@@ -3,7 +3,7 @@
  * Maintainer: joekamprad [joekamprad //a_t// endeavouros.com]
  *******************************************************/
 configuration {
-    font:                "JetBrainsMono Nerd Font 12";
+    font:                "JetBrainsMono Nerd Font 11";
     show-icons:          false;
     icon-theme:          "Numix-Circle";
     display-drun:        "KeyHint";
@@ -22,17 +22,17 @@ window {
     background-color: @background;
     border:           2px;
     border-color:     @selected-normal-background;
-    padding:          24;
-    width:            900px;
+    padding:          18;
+    width:            760px;
 }
 listview {
-    lines:   18;
+    lines:   14;
     columns: 1;
 }
 mainbox {
     border:  0;
     padding: 0;
-    spacing: 12px;
+    spacing: 8px;
 }
 message {
     border:       2px 0px 0px;
@@ -46,13 +46,13 @@ listview {
     fixed-height: 0;
     border:       8px 0px 0px;
     border-color: @separatorcolor;
-    spacing:      10px;
+    spacing:      6px;
     scrollbar:    false;
     padding:      2px 0px 0px;
 }
 element {
     border:  0;
-    padding: 6px;
+    padding: 3px;
 }
 element-text {
     background-color: inherit;
@@ -116,7 +116,7 @@ button.selected {
 inputbar {
     spacing:    0;
     text-color: @normal-foreground;
-    padding:    8px;
+    padding:    4px;
 }
 case-indicator {
     spacing:    0;

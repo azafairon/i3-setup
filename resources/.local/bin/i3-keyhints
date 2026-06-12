@@ -89,12 +89,12 @@ function pretty_action(action, raw) {
   if (action ~ /^mode /) return "Enter mode"
   if (action ~ /^border /) return action
   if (action ~ /^workspace \$ws[0-9]+$/) {
-    gsub(/^workspace \$ws/, "Workspace ", action)
+    action = gensub(/^workspace \$ws([0-9]+)$/, "Workspace \\1", 1, action)
     return action
   }
   if (action ~ /^move container to workspace \$ws[0-9]+/) {
-    gsub(/^move container to workspace \$ws/, "Move window to workspace ", action)
-    sub(/; workspace \$ws[0-9]+$/, " and follow", action)
+    action = gensub(/^move container to workspace \$ws([0-9]+); workspace \$ws[0-9]+$/, "Move window to workspace \\1 and follow", 1, action)
+    action = gensub(/^move container to workspace \$ws([0-9]+)$/, "Move window to workspace \\1", 1, action)
     return action
   }
   return raw

@@ -366,6 +366,7 @@ This creates a VM with:
 - 32 GB disk
 - 128 MB video RAM
 - VMSVGA with 3D acceleration disabled for stability
+- VirtualBox mini-toolbar disabled by default
 - NAT networking
 - the ISO attached and ready to boot
 

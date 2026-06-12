@@ -178,6 +178,7 @@ DISK_PATH="$VM_DIR/$VM_NAME.vdi"
 mkdir -p "$VM_DIR"
 
 VBoxManage createvm --name "$VM_NAME" --ostype ArchLinux_64 --register
+VBoxManage setextradata "$VM_NAME" GUI/ShowMiniToolBar no
 VBoxManage modifyvm "$VM_NAME" \
   --memory "$VM_MEMORY_MB" \
   --cpus "$VM_CPUS" \

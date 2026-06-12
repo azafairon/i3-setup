@@ -99,6 +99,8 @@ VBoxManage clonevm "$BASE_VM_NAME" \
   --name "$CLONE_VM_NAME" \
   --register
 
+VBoxManage setextradata "$CLONE_VM_NAME" GUI/ShowMiniToolBar no
+
 VBoxManage modifyvm "$CLONE_VM_NAME" \
   --vram "$VM_VRAM_MB" \
   --graphicscontroller vmsvga \
