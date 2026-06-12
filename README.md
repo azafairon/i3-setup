@@ -37,7 +37,12 @@ Package note:
 - clipboard manager uses `copyq` rather than `clipit`
 - the categorized app launcher uses `jgmenu` rather than `morc_menu`
 - `pamac-tray` and `fix_xcursor` are not assumed to exist on Endeavour/Arch
-- `virtualbox-guest-utils` is installed automatically only when the installer detects VirtualBox
+- `virtualbox-guest-utils` is offered interactively when the installer detects VirtualBox
+
+Locking note:
+
+- this repo ships a local `blurlock` wrapper in `~/.local/bin/blurlock`
+- it captures the screen, applies a blur with ImageMagick, and feeds the result to `i3lock`
 
 ## Assumptions
 

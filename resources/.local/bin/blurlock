@@ -1,0 +1,9 @@
+#!/bin/bash
+set -eu
+
+RESOLUTION=$(xrandr -q | sed -n 's/.*current[ ]\([0-9]*\) x \([0-9]*\),.*/\1x\2/p')
+
+import -silent -window root jpeg:- | convert - -scale 20% -blur 0x2.5 -resize 500% RGB:- | \
+    i3lock --raw "$RESOLUTION":rgb -i /dev/stdin -e "$@"
+
+exit 0

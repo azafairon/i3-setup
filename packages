@@ -2,6 +2,7 @@ base-devel
 git
 curl
 acpi
+alsa-utils
 arandr
 awesome-terminal-fonts
 ttf-jetbrains-mono-nerd
@@ -19,8 +20,10 @@ i3-wm
 i3lock
 i3status-rust
 jq
+libnotify
 lightdm
 lightdm-slick-greeter
+imagemagick
 networkmanager
 nwg-look
 mpv
@@ -64,8 +67,14 @@ zsh-autosuggestions
 volumeicon
 xorg-xkill
 picom
+pipewire
+pipewire-pulse
 pop-gtk-theme
 qt5ct
 kvantum
 kvantum-qt5
 tree
+upower
+wireplumber
+bluez
+bluez-utils

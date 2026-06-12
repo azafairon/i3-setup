@@ -10,6 +10,7 @@ SYSTEM_BACKUP_DIR="/var/backups/i3-setup/$(date +%Y%m%d-%H%M%S)"
 WALLPAPER_TARGET="/usr/share/backgrounds/i3-setup-wallpaper.jpg"
 OH_MY_ZSH_REPO="https://github.com/ohmyzsh/ohmyzsh.git"
 OH_MY_ZSH_COMMIT="70ad5e3df8f7bed68aa6672029496926e632aedd"
+PATH="$HOME/.local/bin:$PATH"
 
 BACKUP_CREATED=0
 SAFE_GRAPHICS=0
@@ -100,6 +101,18 @@ append_driver_package() {
   DRIVER_PACKAGES+=("$pkg")
 }
 
+remove_driver_package() {
+  local target=$1
+  local filtered_packages=()
+  local pkg
+
+  for pkg in "${DRIVER_PACKAGES[@]:-}"; do
+    [ "$pkg" = "$target" ] || filtered_packages+=("$pkg")
+  done
+
+  DRIVER_PACKAGES=("${filtered_packages[@]}")
+}
+
 is_nvidia_driver_package() {
   case "$1" in
     nvidia-utils|nvidia-open|nvidia-open-lts) return 0 ;;
@@ -138,7 +151,7 @@ detect_kernel_packages() {
   while read -r pkg; do
     [ -n "$pkg" ] || continue
     KERNEL_PACKAGES+=("$pkg")
-  done < <(pacman -Qq 2>/dev/null | rg '^(linux|linux-lts|linux-zen|linux-hardened|linux-rt|linux-rt-lts)$' || true)
+  done < <(pacman -Qq 2>/dev/null | grep -E '^(linux|linux-lts|linux-zen|linux-hardened|linux-rt|linux-rt-lts)$' || true)
 }
 
 configure_nvidia_packages() {
@@ -180,12 +193,10 @@ configure_nvidia_packages() {
   fi
 
   if [ "${#nvidia_packages[@]}" -gt 0 ] && ! prompt_yes_no "Install recommended NVIDIA packages for detected kernels: ${DRIVER_PACKAGES[*]}" "$default_answer"; then
-    local filtered_packages=()
     local pkg
     for pkg in "${DRIVER_PACKAGES[@]}"; do
-      is_nvidia_driver_package "$pkg" || filtered_packages+=("$pkg")
+      is_nvidia_driver_package "$pkg" && remove_driver_package "$pkg"
     done
-    DRIVER_PACKAGES=("${filtered_packages[@]}")
   fi
 }
 
@@ -195,12 +206,7 @@ configure_amd_packages() {
 
   append_driver_package vulkan-radeon
   if ! prompt_yes_no "Install optional AMD Vulkan package: vulkan-radeon" "no"; then
-    local filtered_packages=()
-    local pkg
-    for pkg in "${DRIVER_PACKAGES[@]}"; do
-      is_amd_driver_package "$pkg" || filtered_packages+=("$pkg")
-    done
-    DRIVER_PACKAGES=("${filtered_packages[@]}")
+    remove_driver_package vulkan-radeon
   fi
 }
 
@@ -210,13 +216,31 @@ configure_intel_packages() {
 
   append_driver_package vulkan-intel
   if ! prompt_yes_no "Install optional Intel Vulkan package: vulkan-intel" "no"; then
-    local filtered_packages=()
-    local pkg
-    for pkg in "${DRIVER_PACKAGES[@]}"; do
-      is_intel_driver_package "$pkg" || filtered_packages+=("$pkg")
-    done
-    DRIVER_PACKAGES=("${filtered_packages[@]}")
+    remove_driver_package vulkan-intel
   fi
+}
+
+configure_virtualization_packages() {
+  case "$VIRT_TYPE" in
+    oracle|virtualbox)
+      append_driver_package virtualbox-guest-utils
+      if ! prompt_yes_no "Install VirtualBox guest package: virtualbox-guest-utils" "yes"; then
+        remove_driver_package virtualbox-guest-utils
+      fi
+      ;;
+    vmware)
+      append_driver_package open-vm-tools
+      if ! prompt_yes_no "Install VMware guest package: open-vm-tools" "yes"; then
+        remove_driver_package open-vm-tools
+      fi
+      ;;
+    virtio|kvm|qemu)
+      append_driver_package qemu-guest-agent
+      if ! prompt_yes_no "Install QEMU/KVM guest package: qemu-guest-agent" "yes"; then
+        remove_driver_package qemu-guest-agent
+      fi
+      ;;
+  esac
 }
 
 read_package_list() {
@@ -362,7 +386,6 @@ configure_graphics_profile() {
 
 configure_driver_packages() {
   local vendor
-  local default_answer=no
 
   [ "${#GPU_VENDORS[@]}" -gt 0 ] || return
 
@@ -377,20 +400,10 @@ configure_driver_packages() {
       intel)
         configure_intel_packages
         ;;
-      virtualbox|oracle)
-        append_driver_package virtualbox-guest-utils
-        default_answer=yes
-        ;;
-      vmware)
-        append_driver_package open-vm-tools
-        default_answer=yes
-        ;;
-      virtio|kvm|qemu)
-        append_driver_package qemu-guest-agent
-        default_answer=yes
-        ;;
     esac
   done
+
+  configure_virtualization_packages
 
   if [ "${#GPU_NOTICES[@]}" -gt 0 ]; then
     local notice
@@ -400,29 +413,6 @@ configure_driver_packages() {
   fi
 
   [ "${#DRIVER_PACKAGES[@]}" -gt 0 ] || return
-
-  local prompt_packages=()
-  local pkg
-  for pkg in "${DRIVER_PACKAGES[@]}"; do
-    if [ "$NVIDIA_PROMPT_HANDLED" -eq 1 ] && is_nvidia_driver_package "$pkg"; then
-      continue
-    fi
-    if [ "$AMD_PROMPT_HANDLED" -eq 1 ] && is_amd_driver_package "$pkg"; then
-      continue
-    fi
-    if [ "$INTEL_PROMPT_HANDLED" -eq 1 ] && is_intel_driver_package "$pkg"; then
-      continue
-    fi
-    prompt_packages+=("$pkg")
-  done
-
-  if [ "${#prompt_packages[@]}" -eq 0 ]; then
-    return
-  fi
-
-  if ! prompt_yes_no "Install recommended detected graphics/guest packages: ${prompt_packages[*]}" "$default_answer"; then
-    DRIVER_PACKAGES=()
-  fi
 }
 
 preflight() {
@@ -455,10 +445,6 @@ install_official_packages() {
     PACKAGE_LIST+=("${DRIVER_PACKAGES[@]}")
   fi
   sudo pacman -S --needed --noconfirm "${PACKAGE_LIST[@]}"
-}
-
-install_virtualization_packages() {
-  :
 }
 
 bootstrap_yay_if_needed() {
@@ -494,7 +480,13 @@ install_user_configs() {
   install_file_with_backup "$RESOURCES_DIR/.bashrc" "$HOME/.bashrc"
   install_file_with_backup "$RESOURCES_DIR/.profile" "$HOME/.profile"
   install_file_with_backup "$RESOURCES_DIR/.gtkrc-2.0" "$HOME/.gtkrc-2.0"
-  chmod +x "$HOME/.local/bin/i3-keyhints" 2>/dev/null || true
+  if [ -d "$HOME/.local/bin" ]; then
+    local local_bin_entry
+    for local_bin_entry in "$HOME/.local/bin"/*; do
+      [ -f "$local_bin_entry" ] || continue
+      chmod +x "$local_bin_entry"
+    done
+  fi
 
   if [ "$SAFE_GRAPHICS" -eq 1 ]; then
     log "Applying safe graphics profile"
@@ -557,6 +549,10 @@ enable_services() {
       fi
       ;;
   esac
+
+  if pacman -Q bluez >/dev/null 2>&1; then
+    sudo systemctl enable bluetooth.service
+  fi
 }
 
 change_default_shell() {
@@ -611,7 +607,6 @@ main() {
   configure_driver_packages
   install_bootstrap_packages
   install_official_packages
-  install_virtualization_packages
   bootstrap_yay_if_needed
   install_aur_packages
   install_user_configs
