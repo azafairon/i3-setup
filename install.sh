@@ -494,6 +494,7 @@ install_user_configs() {
   install_file_with_backup "$RESOURCES_DIR/.bashrc" "$HOME/.bashrc"
   install_file_with_backup "$RESOURCES_DIR/.profile" "$HOME/.profile"
   install_file_with_backup "$RESOURCES_DIR/.gtkrc-2.0" "$HOME/.gtkrc-2.0"
+  chmod +x "$HOME/.local/bin/i3-keyhints" 2>/dev/null || true
 
   if [ "$SAFE_GRAPHICS" -eq 1 ]; then
     log "Applying safe graphics profile"

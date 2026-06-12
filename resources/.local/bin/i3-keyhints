@@ -112,17 +112,18 @@ function pretty_action(action, raw) {
   sub(/^exec /, "", action)
   gsub(/\$ws([0-9]+)/, "\\1", action)
   category = infer_category(raw, action)
-  printf "%s\t%s\t%s\n", category, pretty_key(key), pretty_action(action, raw)
+  printf "%s\t%s\t%s\t%s\n", category, category_label(category), pretty_key(key), pretty_action(action, raw)
 }
-' "$config_file" | sort -t "	" -k1,1 -k2,2 | awk -F "\t" '
+' "$config_file" | sort -t "	" -k1,1 -k3,3 | awk -F "\t" '
 BEGIN { current = "" }
 {
   category = $1
-  key = $2
-  action = $3
+  label = $2
+  key = $3
+  action = $4
   if (category != current) {
     if (current != "") print ""
-    print category_label(category) "\t"
+    print label "\t"
     current = category
   }
   print "  " key "\t" action
