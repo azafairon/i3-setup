@@ -467,6 +467,11 @@ install_aur_packages() {
   log "Installing AUR packages"
   read_package_list "$AUR_PACKAGES_FILE"
   yay -S --needed --noconfirm "${PACKAGE_LIST[@]}"
+
+  if printf '%s\n' "${PACKAGE_LIST[@]}" | grep -qx 'i3exit'; then
+    command -v i3exit >/dev/null 2>&1 || die "i3exit was requested from AUR but is not available on PATH after install"
+    command -v blurlock >/dev/null 2>&1 || die "i3exit was installed but blurlock was not found on PATH after install"
+  fi
 }
 
 install_user_configs() {

@@ -41,8 +41,8 @@ Package note:
 
 Locking note:
 
-- this repo ships a local `blurlock` wrapper in `~/.local/bin/blurlock`
-- it captures the screen, applies a blur with ImageMagick, and feeds the result to `i3lock`
+- `blurlock` is expected to be provided by the `i3exit` package
+- `i3exit` is installed from AUR in this bootstrap
 
 ## Assumptions
 
