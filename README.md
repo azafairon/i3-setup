@@ -123,6 +123,18 @@ The installer copies it to:
 
 Replace that file in the repo if you want a different default wallpaper.
 
+## Local Screen Layouts
+
+Keep monitor-specific layouts out of this repo so the setup remains portable.
+
+For a personal machine, generate a layout with `arandr` and save it under `~/.screenlayout/`, for example `~/.screenlayout/2-big-monitors.sh`. To apply it automatically, change the wallpaper autostart line in `~/.config/i3/config` to something like:
+
+```i3config
+exec_always --no-startup-id sh -c '"$HOME/.screenlayout/2-big-monitors.sh"; feh --bg-fill "$HOME/Pictures/wallpaper.jpg"'
+```
+
+The generic repo template intentionally keeps using `autorandr -c || true` instead.
+
 ## Default Look
 
 The default desktop style shipped by this repo is:

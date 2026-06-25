@@ -7,6 +7,12 @@ icons = "none"
 
 [theme]
 theme = "semi-native"
+[theme.overrides]
+idle_bg = "#00000000"
+info_bg = "#00000000"
+good_bg = "#00000000"
+warning_bg = "#00000000"
+critical_bg = "#00000000"
 
 [[block]]
 block = "net"

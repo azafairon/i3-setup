@@ -315,10 +315,12 @@ bar {
       colors {
         background #00000000
         statusline #F9FAF9
-        separator  #454947
-        binding_mode       #16a085 #00000000 #F9FAF9
-        urgent_workspace   #16a085 #FDF6E3 #E5201D
-        focused_workspace  #F9FAF9 #16a085 #292F34
+        separator  #00000000
+        binding_mode       #00000000 #00000000 #F9FAF9
+        urgent_workspace   #00000000 #00000000 #E5201D
+        focused_workspace  #00000000 #00000000 #F9FAF9
+        active_workspace   #00000000 #00000000 #F9FAF9
+        inactive_workspace #00000000 #00000000 #93A1A1
       }
 }
 

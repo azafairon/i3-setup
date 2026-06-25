@@ -13,6 +13,11 @@ degree = "\u00B0"
 theme = "semi-native"
 [theme.overrides]
 # separator = "<span font_family='NotoSans Nerd Font'>\ue0b2</span>"
+idle_bg = "#00000000"
+info_bg = "#00000000"
+good_bg = "#00000000"
+warning_bg = "#00000000"
+critical_bg = "#00000000"
 [[block]]
 block = "net"
 interval = 2
@@ -22,13 +27,10 @@ inactive_format = " ^icon_no_wifi "
 merge_with_next = true
 
 [[block]]
-block = "bluetooth"
-format = " $icon {$battery_icon |}"
-disconnected_format = " $icon "
-[block.battery_state]
-"0..20" = "critical"
-"21..70" = "warning"
-"71..100" = "good"
+block = "custom"
+interval = 10
+format = " $text "
+command = '''bluetoothctl show | awk '/^[[:space:]]*Powered:/ { print "bt " ($2 == "yes" ? "on" : "off"); found = 1 } END { if (!found) print "bt unavailable" }' '''
 
 [[block]]
 block = "disk_space"
