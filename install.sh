@@ -14,6 +14,7 @@ PATH="$HOME/.local/bin:$PATH"
 
 BACKUP_CREATED=0
 SAFE_GRAPHICS=0
+WITH_CONKY=0
 VIRT_TYPE=none
 INTERACTIVE=0
 DRIVER_PACKAGES=()
@@ -43,15 +44,22 @@ parse_args() {
       --safe-graphics|--vm-safe)
         SAFE_GRAPHICS=1
         ;;
+      --with-conky)
+        WITH_CONKY=1
+        ;;
       -h|--help)
         cat <<'EOF'
 Usage:
-  ./install.sh [--safe-graphics]
+  ./install.sh [--safe-graphics] [--with-conky]
 
 Options:
   --safe-graphics, --vm-safe
       Use a safer graphics profile for VMs and weak/unsupported GPU paths.
       This disables picom autostart and uses an opaque Alacritty config.
+
+  --with-conky
+      Install and enable the optional Conky desktop widget.
+      Ignored when safe graphics mode is enabled.
 EOF
         exit 0
         ;;
@@ -391,6 +399,21 @@ configure_graphics_profile() {
   fi
 }
 
+configure_optional_features() {
+  if [ "$SAFE_GRAPHICS" -eq 1 ]; then
+    if [ "$WITH_CONKY" -eq 1 ]; then
+      log "Safe graphics profile selected; skipping Conky autostart"
+    fi
+    WITH_CONKY=0
+    return
+  fi
+
+  if [ "$WITH_CONKY" -eq 1 ] || prompt_yes_no "Install and enable optional Conky desktop widget" "no"; then
+    WITH_CONKY=1
+    append_driver_package conky
+  fi
+}
+
 configure_driver_packages() {
   local vendor
 
@@ -506,12 +529,31 @@ install_user_configs() {
       chmod +x "$local_bin_entry"
     done
   fi
+  if [ -d "$HOME/.config/conky" ]; then
+    chmod +x "$HOME/.config/conky/indi-sevilla-launch" "$HOME/.config/conky/indi-sevilla-sensors" 2>/dev/null || true
+  fi
 
   if [ "$SAFE_GRAPHICS" -eq 1 ]; then
     log "Applying safe graphics profile"
     install_file_with_backup "$RESOURCES_DIR/.config/alacritty/alacritty-safe.toml" "$HOME/.config/alacritty/alacritty.toml"
     install_file_with_backup "$RESOURCES_DIR/.config/i3/config-safe" "$HOME/.config/i3/config"
   fi
+}
+
+enable_optional_user_features() {
+  if [ "$WITH_CONKY" -ne 1 ]; then
+    return
+  fi
+
+  local i3_config="$HOME/.config/i3/config"
+  local conky_start="exec_always --no-startup-id sh -c 'pkill -x conky; \"\$HOME/.config/conky/indi-sevilla-launch\"'"
+
+  if grep -Fq 'indi-sevilla-launch' "$i3_config"; then
+    return
+  fi
+
+  log "Enabling optional Conky autostart"
+  printf '\n%s\n' "$conky_start" >> "$i3_config"
 }
 
 install_system_configs() {
@@ -604,6 +646,9 @@ verify_commands() {
     jgmenu_run flameshot lightdm nm-applet nsxiv nvim pavucontrol pcmanfm picom rofi volumeicon
     xautolock xfce4-power-manager yay zsh
   )
+  if [ "$WITH_CONKY" -eq 1 ]; then
+    commands+=(conky)
+  fi
   local cmd
   for cmd in "${commands[@]}"; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
@@ -638,11 +683,13 @@ main() {
   fi
   configure_graphics_profile
   configure_driver_packages
+  configure_optional_features
   install_bootstrap_packages
   install_official_packages
   bootstrap_yay_if_needed
   install_aur_packages
   install_user_configs
+  enable_optional_user_features
   install_system_configs
   install_wallpaper
   install_oh_my_zsh

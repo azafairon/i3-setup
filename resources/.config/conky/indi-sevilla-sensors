@@ -1,0 +1,51 @@
+#!/bin/sh
+
+case "$1" in
+  package)
+    sensors 2>/dev/null | awk '
+      /^Package id 0:/ { gsub(/[+°C]/, "", $4); printf "%s°C\n", $4; found=1; exit }
+      /^Tctl:/ { gsub(/[+°C]/, "", $2); printf "%s°C\n", $2; found=1; exit }
+      /^temp1:/ && !found { gsub(/[+°C]/, "", $2); printf "%s°C\n", $2; found=1; exit }
+      END { if (!found) print "n/a" }'
+    ;;
+  package-number)
+    sensors 2>/dev/null | awk '
+      /^Package id 0:/ { gsub(/[+°C]/, "", $4); print int($4); found=1; exit }
+      /^Tctl:/ { gsub(/[+°C]/, "", $2); print int($2); found=1; exit }
+      /^temp1:/ && !found { gsub(/[+°C]/, "", $2); print int($2); found=1; exit }
+      END { if (!found) print 0 }'
+    ;;
+  hottest-core)
+    sensors 2>/dev/null | awk '/^Core [0-9]+:/ { gsub(/[+°C]/, "", $3); if ($3 > max) max = $3 } END { if (max) printf "%s°C\n", max; else print "n/a" }'
+    ;;
+  nvme)
+    sensors 2>/dev/null | awk '/^Composite:/ { gsub(/[+°C]/, "", $2); printf "%s°C\n", $2; found=1; exit } END { if (!found) print "n/a" }'
+    ;;
+  net-iface)
+    ip route get 1.1.1.1 2>/dev/null | sed -n 's/.* dev \([^ ]*\).*/\1/p'
+    ;;
+  net-ip)
+    iface=$(ip route get 1.1.1.1 2>/dev/null | sed -n 's/.* dev \([^ ]*\).*/\1/p')
+    [ -n "$iface" ] && ip -4 addr show "$iface" 2>/dev/null | sed -n 's/.*inet \([^/]*\).*/\1/p' | head -n1 || printf 'n/a\n'
+    ;;
+  net-state)
+    iface=$(ip route get 1.1.1.1 2>/dev/null | sed -n 's/.* dev \([^ ]*\).*/\1/p')
+    [ -n "$iface" ] && cat "/sys/class/net/$iface/operstate" 2>/dev/null || printf 'offline\n'
+    ;;
+  threads)
+    nproc 2>/dev/null || printf 1
+    ;;
+  cpu-tree)
+    count=$(nproc 2>/dev/null || printf 1)
+    width=${CONKY_CORE_BAR_WIDTH:-160}
+    i=1
+    while [ "$i" -le "$count" ] && [ "$i" -le 12 ]; do
+      if [ "$i" -eq "$count" ] || [ "$i" -eq 12 ]; then branch="└─"; else branch="├─"; fi
+      printf '${color4}%s %02d${color} ${color3}${cpubar cpu%d 5,%s}${color} ${cpu cpu%d}%%\n' "$branch" "$i" "$i" "$width" "$i"
+      i=$((i + 1))
+    done
+    if [ "$count" -gt 12 ]; then
+      printf '${color4}└─ +%d more threads${color}\n' $((count - 12))
+    fi
+    ;;
+esac

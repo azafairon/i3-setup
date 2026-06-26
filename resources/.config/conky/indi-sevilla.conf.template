@@ -1,0 +1,66 @@
+conky.config = {
+    update_interval = 1,
+    total_run_times = 0,
+    double_buffer = true,
+    no_buffers = true,
+    cpu_avg_samples = 2,
+    text_buffer_size = 4096,
+
+    own_window = true,
+    own_window_class = 'Conky',
+    own_window_type = 'override',
+    own_window_transparent = true,
+    own_window_argb_visual = true,
+    own_window_argb_value = 0,
+    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+
+    alignment = 'top_left',
+    gap_x = __GAP_X__,
+    gap_y = __GAP_Y__,
+    minimum_width = __WIDTH__,
+    maximum_width = __WIDTH__,
+
+    draw_shades = false,
+    draw_outline = false,
+    draw_borders = false,
+    draw_graph_borders = false,
+
+    use_xft = true,
+    font = 'JetBrainsMonoNL Nerd Font:size=__FONT_SIZE__',
+    xftalpha = 0.96,
+
+    default_color = 'F6E7CF',
+    color1 = 'F2B66D',
+    color2 = 'D9897E',
+    color3 = '83C5BE',
+    color4 = '8E6F5C',
+};
+
+conky.text = [[
+${font JetBrainsMonoNL Nerd Font:size=__TITLE_SIZE__}${color1}SEVILLA / CORE MAP${font}${color}
+${color4}threads${color}${alignr}${execi 60 sh ~/.config/conky/indi-sevilla-sensors threads} logical  ${color4}load${color} ${loadavg}
+
+${voffset __SMALL_GAP__}${color1}OVERVIEW${color}
+${color4}cpu ${cpu cpu0}%${color}${alignr}${color3}${cpubar cpu0 __BAR_HEIGHT__,__BAR_WIDTH__}${color}
+${color4}ram ${memperc}%${color}${alignr}${color3}${membar __BAR_HEIGHT__,__BAR_WIDTH__}${color}
+${color4}temp ${execi 3 sh ~/.config/conky/indi-sevilla-sensors package}${color}${alignr}${color2}${execibar 3 sh ~/.config/conky/indi-sevilla-sensors package-number __BAR_HEIGHT__,__BAR_WIDTH__}${color}
+
+${voffset __SMALL_GAP__}${color1}CPU THREAD TREE${color}
+${execpi 2 sh ~/.config/conky/indi-sevilla-sensors cpu-tree}
+
+${voffset __SECTION_GAP__}${color1}THERMALS${color}${alignr}${execi 3 sh ~/.config/conky/indi-sevilla-sensors package}
+${color4}package${color} ${color2}${execibar 3 sh ~/.config/conky/indi-sevilla-sensors package-number __BAR_HEIGHT__,__BAR_WIDTH__}${color}
+${color4}hottest core${color}${alignr}${execi 3 sh ~/.config/conky/indi-sevilla-sensors hottest-core}
+${color4}drive${color}${alignr}${execi 10 sh ~/.config/conky/indi-sevilla-sensors nvme}
+
+${voffset __SECTION_GAP__}${color1}TOP PROCESSES${color}
+${color4}cpu${color} ${top name 1}${alignr}${top cpu 1}%
+${color4}cpu${color} ${top name 2}${alignr}${top cpu 2}%
+${color4}mem${color} ${top_mem name 1}${alignr}${top_mem mem_res 1}
+${color4}mem${color} ${top_mem name 2}${alignr}${top_mem mem_res 2}
+
+${voffset __SECTION_GAP__}${color1}NETWORK${color}${alignr}${execi 10 sh ~/.config/conky/indi-sevilla-sensors net-iface}
+${color4}state${color}${alignr}${execi 5 sh ~/.config/conky/indi-sevilla-sensors net-state}
+${color4}ip${color}${alignr}${execi 30 sh ~/.config/conky/indi-sevilla-sensors net-ip}
+${color4}rx / tx${color}${alignr}${downspeed}${color4} / ${color}${upspeed}
+]];

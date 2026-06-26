@@ -1,0 +1,58 @@
+#!/bin/sh
+set -eu
+
+template="$HOME/.config/conky/indi-sevilla.conf.template"
+generated="$HOME/.cache/conky/indi-sevilla.conf"
+
+primary_geometry=$(xrandr --query 2>/dev/null | awk '/ connected primary / { for (i = 1; i <= NF; i++) if ($i ~ /^[0-9]+x[0-9]+\+/) { print $i; exit } }')
+if [ -z "$primary_geometry" ]; then
+  primary_geometry=$(xrandr --query 2>/dev/null | awk '/ connected / { for (i = 1; i <= NF; i++) if ($i ~ /^[0-9]+x[0-9]+\+/) { print $i; exit } }')
+fi
+
+width=$(printf '%s' "$primary_geometry" | sed -n 's/^\([0-9][0-9]*\)x\([0-9][0-9]*\)+.*/\1/p')
+height=$(printf '%s' "$primary_geometry" | sed -n 's/^\([0-9][0-9]*\)x\([0-9][0-9]*\)+.*/\2/p')
+width=${width:-1920}
+height=${height:-1080}
+
+# Scale gently from 1080p upward while staying sane on small laptop panels.
+scale=$((height * 100 / 1080))
+[ "$scale" -lt 90 ] && scale=90
+[ "$scale" -gt 135 ] && scale=135
+
+panel_width=$((350 * scale / 100))
+bar_width=$((220 * scale / 100))
+bar_height=$((6 * scale / 100))
+font_size=$((10 * scale / 100))
+title_size=$((9 * scale / 100))
+gap_x=$((width * 22 / 1000))
+gap_y=$((height * 65 / 1000))
+small_gap=$((6 * scale / 100))
+section_gap=$((8 * scale / 100))
+
+[ "$panel_width" -lt 330 ] && panel_width=330
+[ "$bar_width" -lt 205 ] && bar_width=205
+[ "$bar_height" -lt 6 ] && bar_height=6
+[ "$font_size" -lt 10 ] && font_size=10
+[ "$title_size" -lt 9 ] && title_size=9
+[ "$gap_x" -lt 28 ] && gap_x=28
+[ "$gap_y" -lt 58 ] && gap_y=58
+[ "$small_gap" -lt 6 ] && small_gap=6
+[ "$section_gap" -lt 8 ] && section_gap=8
+
+export CONKY_CORE_BAR_WIDTH=$((160 * scale / 100))
+[ "$CONKY_CORE_BAR_WIDTH" -lt 150 ] && CONKY_CORE_BAR_WIDTH=150
+
+mkdir -p "$(dirname "$generated")"
+sed \
+  -e "s/__WIDTH__/$panel_width/g" \
+  -e "s/__BAR_WIDTH__/$bar_width/g" \
+  -e "s/__BAR_HEIGHT__/$bar_height/g" \
+  -e "s/__FONT_SIZE__/$font_size/g" \
+  -e "s/__TITLE_SIZE__/$title_size/g" \
+  -e "s/__GAP_X__/$gap_x/g" \
+  -e "s/__GAP_Y__/$gap_y/g" \
+  -e "s/__SMALL_GAP__/$small_gap/g" \
+  -e "s/__SECTION_GAP__/$section_gap/g" \
+  "$template" > "$generated"
+
+exec conky -c "$generated"

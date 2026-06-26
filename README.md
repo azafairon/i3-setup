@@ -67,6 +67,7 @@ chmod +x install.sh
 During install, the script will interactively ask about:
 
 - using a safe graphics profile for VMs or weak/unsupported GPU paths
+- installing and enabling the optional Conky desktop widget
 - installing recommended graphics/guest packages based on detected hardware or virtualization
 
 Driver notes:
@@ -84,12 +85,25 @@ For non-interactive or explicit use, you can still force the safe graphics profi
 ./install.sh --safe-graphics
 ```
 
+To opt into the Conky desktop widget explicitly:
+
+```bash
+./install.sh --with-conky
+```
+
 Safe graphics mode keeps the same general setup but:
 
 - disables picom autostart
 - makes Alacritty opaque
 - disables blur in Alacritty
 - changes the `Super+Ctrl+t` binding into a notice instead of trying to launch picom
+- skips Conky autostart, even if `--with-conky` is passed
+
+Conky note:
+
+- Conky is optional because it is heavier than the i3 bar and may not suit all hardware.
+- The installer copies the Conky config resources, but it only installs the `conky` package and enables autostart when selected.
+- The Conky widget scales itself from the primary monitor resolution and falls back gracefully when temperature sensors are unavailable.
 
 If `git` is not installed yet on the fresh machine:
 
