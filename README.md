@@ -114,12 +114,12 @@ The installer is intended to be re-runnable.
 
 ## Wallpaper
 
-The default wallpaper is `resources/wallpaper.jpg`.
+The default wallpaper is `resources/wallpaper-indi-sevilla.png`.
 
 The installer copies it to:
 
 - `/usr/share/backgrounds/i3-setup-wallpaper.jpg` for LightDM
-- `~/Pictures/wallpaper.jpg` for the user session
+- `~/Pictures/wallpaper-indi-sevilla.png` for the user session
 
 Replace that file in the repo if you want a different default wallpaper.
 
@@ -145,7 +145,7 @@ The primary marker matters because the i3 config uses `tray_output primary`, so 
 To apply the layout automatically, change the wallpaper autostart line in `~/.config/i3/config` to something like:
 
 ```i3config
-exec_always --no-startup-id sh -c '"$HOME/.screenlayout/2-big-monitors.sh"; feh --bg-fill "$HOME/Pictures/wallpaper.jpg"'
+exec_always --no-startup-id sh -c '"$HOME/.screenlayout/2-big-monitors.sh"; feh --bg-fill "$HOME/Pictures/wallpaper-indi-sevilla.png"'
 ```
 
 The generic repo template intentionally keeps using `autorandr -c || true` instead.

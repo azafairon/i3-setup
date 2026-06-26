@@ -518,16 +518,16 @@ install_system_configs() {
   log "Installing system config files"
   install_system_file_with_backup "$RESOURCES_DIR/etc/lightdm/lightdm.conf" /etc/lightdm/lightdm.conf
   install_system_file_with_backup "$RESOURCES_DIR/etc/lightdm/slick-greeter.conf" /etc/lightdm/slick-greeter.conf
-  install_system_file_with_backup "$RESOURCES_DIR/wallpaper.jpg" "$WALLPAPER_TARGET"
+  install_system_file_with_backup "$RESOURCES_DIR/wallpaper-indi-sevilla.png" "$WALLPAPER_TARGET"
 }
 
 install_wallpaper() {
   log "Installing wallpaper"
   run_if_command_exists xdg-user-dirs-update xdg-user-dirs-update
   mkdir -p "$HOME/Pictures"
-  cp -f "$RESOURCES_DIR/wallpaper.jpg" "$HOME/Pictures/wallpaper.jpg"
+  cp -f "$RESOURCES_DIR/wallpaper-indi-sevilla.png" "$HOME/Pictures/wallpaper-indi-sevilla.png"
   if command -v feh >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ]; then
-    feh --bg-fill "$HOME/Pictures/wallpaper.jpg" || true
+    feh --bg-fill "$HOME/Pictures/wallpaper-indi-sevilla.png" || true
   fi
 }
 
@@ -601,7 +601,7 @@ verify_commands() {
   local missing=()
   local commands=(
     alacritty autorandr blurlock code copyq dunst feh fzf google-chrome-stable i3exit
-    jgmenu_run flameshot lightdm nm-applet nvim pavucontrol pcmanfm picom rofi volumeicon
+    jgmenu_run flameshot lightdm nm-applet nsxiv nvim pavucontrol pcmanfm picom rofi volumeicon
     xautolock xfce4-power-manager yay zsh
   )
   local cmd

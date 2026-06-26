@@ -44,6 +44,7 @@ bindsym $mod+z exec --no-startup-id jgmenu_run
 ################################################################################################
 
 exec --no-startup-id volumeicon
+exec --no-startup-id blueman-applet
 bindsym $mod+Ctrl+m exec alacritty -e alsamixer
 
 ################################################################################################
@@ -270,7 +271,7 @@ bindsym $mod+9 exec --no-startup-id blurlock
 
 # Autostart applications
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec --no-startup-id sh -c 'autorandr -c || true; feh --bg-fill "$HOME/Pictures/wallpaper.jpg"'
+exec --no-startup-id sh -c 'autorandr -c || true; feh --bg-fill "$HOME/Pictures/wallpaper-indi-sevilla.png"'
 exec --no-startup-id nm-applet
 exec --no-startup-id xsettingsd
 exec --no-startup-id xfce4-power-manager
