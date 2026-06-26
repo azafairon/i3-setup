@@ -57,7 +57,7 @@ bindsym $mod+Shift+f exec pcmanfm
 bindsym $mod+Ctrl+f exec --no-startup-id sh -c 'pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY pcmanfm'
 bindsym $mod+Ctrl+t exec --no-startup-id picom -b
 bindsym $mod+Shift+d --release exec --no-startup-id sh -c 'killall dunst; dunst >/dev/null 2>&1 & sleep 0.2; notify-send "Dunst restarted"'
-bindsym Print exec --no-startup-id ksnip
+bindsym Print exec --no-startup-id flameshot gui
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 
 # change focus
@@ -215,6 +215,7 @@ for_window [class="Xfburn"] floating enable
 for_window [instance="Godot_Engine"] floating enable border normal
 for_window [instance="Godot_Editor"] floating disable border none
 for_window [instance="ksnip"] floating enable border normal
+for_window [class="flameshot"] floating enable border normal
 for_window [instance="pavucontrol"] floating enable border normal
 
 # switch to workspace with urgent window automatically

@@ -50,7 +50,7 @@ xorg-xdpyinfo
 xss-lock
 zip
 lsd
-ksnip
+flameshot
 flatpak
 autorandr
 go
@@ -79,3 +79,4 @@ upower
 wireplumber
 bluez
 bluez-utils
+blueman

@@ -175,7 +175,7 @@ Most useful shortcuts:
 - `Super+Shift+w`: alternate Chrome shortcut for VMs/hosts that swallow `Super+F2`
 - `Super+Shift+f`: alternate PCManFM shortcut for VMs/hosts that swallow `Super+F3`
 - `Super+Ctrl+f`: alternate root PCManFM shortcut for VMs/hosts that swallow `Super+Shift+F3`
-- `Print`: open Ksnip screenshot tool
+- `Print`: select a screenshot region with Flameshot
 - `Super+Ctrl+x`: xkill
 
 Window management:
