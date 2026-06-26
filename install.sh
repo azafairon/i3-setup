@@ -497,6 +497,7 @@ install_user_configs() {
   install_file_with_backup "$RESOURCES_DIR/.zshrc" "$HOME/.zshrc"
   install_file_with_backup "$RESOURCES_DIR/.bashrc" "$HOME/.bashrc"
   install_file_with_backup "$RESOURCES_DIR/.profile" "$HOME/.profile"
+  install_file_with_backup "$RESOURCES_DIR/environment" "$HOME/.pam_environment"
   install_file_with_backup "$RESOURCES_DIR/.gtkrc-2.0" "$HOME/.gtkrc-2.0"
   if [ -d "$HOME/.local/bin" ]; then
     local local_bin_entry
@@ -600,7 +601,7 @@ verify_commands() {
   local missing=()
   local commands=(
     alacritty autorandr blurlock code copyq dunst feh fzf google-chrome-stable i3exit
-    jgmenu_run ksnip lightdm nm-applet nvim pavucontrol pcmanfm picom rofi volumeicon
+    jgmenu_run flameshot lightdm nm-applet nvim pavucontrol pcmanfm picom rofi volumeicon
     xautolock xfce4-power-manager yay zsh
   )
   local cmd

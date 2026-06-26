@@ -47,7 +47,6 @@ xorg-xinit
 xorg-xrandr
 xorg-xbacklight
 xorg-xdpyinfo
-xss-lock
 zip
 lsd
 flameshot

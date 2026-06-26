@@ -127,7 +127,22 @@ Replace that file in the repo if you want a different default wallpaper.
 
 Keep monitor-specific layouts out of this repo so the setup remains portable.
 
-For a personal machine, generate a layout with `arandr` and save it under `~/.screenlayout/`, for example `~/.screenlayout/2-big-monitors.sh`. To apply it automatically, change the wallpaper autostart line in `~/.config/i3/config` to something like:
+For a personal machine, use this flow after the base install:
+
+1. Open `arandr`.
+2. Arrange the monitors visually.
+3. Save the layout under `~/.screenlayout/`, for example `~/.screenlayout/2-big-monitors.sh`.
+4. Edit the generated script and mark the monitor that should host tray icons as primary.
+
+Example primary-output line:
+
+```bash
+xrandr --output DP-5 --primary --mode 3440x1440 --pos 1920x0 --rotate normal
+```
+
+The primary marker matters because the i3 config uses `tray_output primary`, so tray icons follow whichever output is marked primary by `xrandr`.
+
+To apply the layout automatically, change the wallpaper autostart line in `~/.config/i3/config` to something like:
 
 ```i3config
 exec_always --no-startup-id sh -c '"$HOME/.screenlayout/2-big-monitors.sh"; feh --bg-fill "$HOME/Pictures/wallpaper.jpg"'
@@ -448,7 +463,7 @@ Useful commands inside the VM:
 
 ```bash
 echo $SHELL
-command -v nvim code rofi alacritty google-chrome-stable yay
+command -v nvim code rofi alacritty google-chrome-stable flameshot yay
 systemctl status lightdm --no-pager
 systemctl status NetworkManager --no-pager
 ```

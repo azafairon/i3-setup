@@ -21,7 +21,7 @@ function pretty_key(key) {
 
 function infer_category(raw, action) {
   if (raw ~ /i3-keyhints/) return "Help"
-  if (raw ~ /rofi -modi drun|jgmenu_run|google-chrome-stable|pcmanfm|flameshot|ksnip|alsamixer|xkill/) return "Applications"
+  if (raw ~ /rofi -modi drun|jgmenu_run|google-chrome-stable|pcmanfm|flameshot|alsamixer|xkill/) return "Applications"
   if (action ~ /^focus |^move |^floating toggle$|^fullscreen toggle$|^focus mode_toggle$|^focus parent$|^sticky toggle$|^kill$/) return "Windows"
   if (action ~ /^split h|^split v|^layout |^border /) return "Layout"
   if (action ~ /^workspace |^move container to workspace |^move workspace to output /) return "Workspaces"
@@ -51,7 +51,7 @@ function pretty_action(action, raw) {
   if (raw ~ /pcmanfm/) return "File manager"
   if (raw ~ /alacritty -e alsamixer/) return "Alsamixer"
   if (raw ~ /^exec alacritty$/ || raw ~ /exec --no-startup-id alacritty$/) return "Terminal"
-  if (raw ~ /flameshot|ksnip/) return "Screenshot"
+  if (raw ~ /flameshot/) return "Screenshot"
   if (raw ~ /xkill/) return "xkill"
   if (raw ~ /picom/) return "Toggle compositor"
   if (raw ~ /killall dunst/) return "Restart notifications"
