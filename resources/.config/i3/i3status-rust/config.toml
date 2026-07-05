@@ -33,6 +33,12 @@ format = " $text "
 command = '''bluetoothctl show | awk '/^[[:space:]]*Powered:/ { print "bt " ($2 == "yes" ? "on" : "off"); found = 1 } END { if (!found) print "bt unavailable" }' '''
 
 [[block]]
+block = "custom"
+interval = 2
+format = " $text "
+command = '''setxkbmap -query | awk '$1 == "layout:" { print "kb " $2 }' '''
+
+[[block]]
 block = "disk_space"
 interval = 60
 info_type = "available"

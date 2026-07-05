@@ -1,0 +1,15 @@
+#!/bin/sh
+
+current_layout=$(setxkbmap -query 2>/dev/null | awk '$1 == "layout:" { print $2 }')
+
+case "$current_layout" in
+  es)
+    next_layout=gb
+    ;;
+  *)
+    next_layout=es
+    ;;
+esac
+
+setxkbmap "$next_layout" || exit 1
+notify-send "Keyboard layout" "$next_layout"

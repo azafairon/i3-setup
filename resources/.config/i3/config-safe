@@ -33,6 +33,7 @@ bindsym $mod+Shift+F3 exec --no-startup-id sh -c 'pkexec env DISPLAY=$DISPLAY XA
 bindsym $mod+Shift+w exec google-chrome-stable
 bindsym $mod+Shift+f exec pcmanfm
 bindsym $mod+Ctrl+f exec --no-startup-id sh -c 'pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY pcmanfm'
+bindsym $mod+Ctrl+space exec --no-startup-id sh ~/.local/bin/toggle-kb-layout
 bindsym $mod+Ctrl+t exec --no-startup-id notify-send 'VM safe mode: picom disabled'
 bindsym $mod+Shift+d --release exec --no-startup-id sh -c 'killall dunst; dunst >/dev/null 2>&1 & sleep 0.2; notify-send "Dunst restarted"'
 bindsym Print exec --no-startup-id flameshot gui
@@ -162,6 +163,7 @@ bindsym $mod+9 exec --no-startup-id blurlock
 
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id sh -c 'autorandr -c || true; feh --bg-fill "$HOME/Pictures/wallpaper-indi-sevilla.png"'
+exec_always --no-startup-id setxkbmap gb
 exec --no-startup-id nm-applet
 exec --no-startup-id xsettingsd
 exec --no-startup-id xfce4-power-manager

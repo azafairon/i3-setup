@@ -23,6 +23,7 @@ The goal is:
 - install the default wallpaper
 - install `oh-my-zsh`
 - set the default shell to `zsh`
+- set the default keyboard layout to `gb`
 - enable `NetworkManager` and `lightdm`
 - run post-install checks for expected commands and services
 - back up replaced system files under `/var/backups/i3-setup/<timestamp>`
@@ -204,6 +205,7 @@ Most useful shortcuts:
 - `Super+Shift+w`: alternate Chrome shortcut for VMs/hosts that swallow `Super+F2`
 - `Super+Shift+f`: alternate PCManFM shortcut for VMs/hosts that swallow `Super+F3`
 - `Super+Ctrl+f`: alternate root PCManFM shortcut for VMs/hosts that swallow `Super+Shift+F3`
+- `Super+Ctrl+Space`: toggle keyboard layout between `gb` and `es`
 - `Print`: select a screenshot region with Flameshot
 - `Super+Ctrl+x`: xkill
 
