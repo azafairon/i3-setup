@@ -48,6 +48,7 @@ xorg-xinit
 xorg-xrandr
 xorg-xbacklight
 xorg-xdpyinfo
+xorg-xwininfo
 zip
 lsd
 flameshot
