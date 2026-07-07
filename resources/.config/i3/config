@@ -131,6 +131,8 @@ bindsym $mod+minus scratchpad show
 #navigate workspaces next / previous
 bindsym $mod+Ctrl+Right workspace next
 bindsym $mod+Ctrl+Left workspace prev
+bindsym $mod+Shift+Ctrl+Right move container to workspace next; workspace next
+bindsym $mod+Shift+Ctrl+Left move container to workspace prev; workspace prev
 
 # Mark and rename a workspace
 bindsym $mod+Mod1+n exec --no-startup-id "i3-input -F 'mark \\"%s\\"; rename workspace to \\"%s\\"' -P 'Workspace new name: '"
