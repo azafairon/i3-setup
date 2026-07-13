@@ -10,6 +10,8 @@ SYSTEM_BACKUP_DIR="/var/backups/i3-setup/$(date +%Y%m%d-%H%M%S)"
 WALLPAPER_TARGET="/usr/share/backgrounds/i3-setup-wallpaper.jpg"
 OH_MY_ZSH_REPO="https://github.com/ohmyzsh/ohmyzsh.git"
 OH_MY_ZSH_COMMIT="70ad5e3df8f7bed68aa6672029496926e632aedd"
+POWERLEVEL10K_REPO="https://github.com/romkatv/powerlevel10k.git"
+POWERLEVEL10K_COMMIT="9253fb1c5034410c43a0c681ff8294181c54016c"
 PATH="$HOME/.local/bin:$PATH"
 
 BACKUP_CREATED=0
@@ -520,6 +522,7 @@ install_user_configs() {
   install_file_with_backup "$RESOURCES_DIR/.zshrc" "$HOME/.zshrc"
   install_file_with_backup "$RESOURCES_DIR/.bashrc" "$HOME/.bashrc"
   install_file_with_backup "$RESOURCES_DIR/.profile" "$HOME/.profile"
+  install_file_with_backup "$RESOURCES_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
   install_file_with_backup "$RESOURCES_DIR/environment" "$HOME/.pam_environment"
   install_file_with_backup "$RESOURCES_DIR/.gtkrc-2.0" "$HOME/.gtkrc-2.0"
   if [ -d "$HOME/.local/bin" ]; then
@@ -590,6 +593,19 @@ install_oh_my_zsh() {
     "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
 }
 
+install_powerlevel10k() {
+  local theme_dir="$HOME/.oh-my-zsh/custom/themes/powerlevel10k"
+
+  if [ ! -d "$theme_dir" ]; then
+    log "Installing powerlevel10k"
+    git clone "$POWERLEVEL10K_REPO" "$theme_dir"
+    (
+      cd "$theme_dir"
+      git checkout --quiet "$POWERLEVEL10K_COMMIT"
+    )
+  fi
+}
+
 link_omz_plugin() {
   local source=$1
   local target=$2
@@ -643,7 +659,7 @@ verify_commands() {
   local missing=()
   local commands=(
     alacritty autorandr blurlock code copyq dunst feh fzf google-chrome-stable i3exit
-    jgmenu_run flameshot lightdm nm-applet nsxiv nvim pavucontrol pcmanfm picom rofi volumeicon
+    jgmenu_run flameshot lightdm nm-applet nsxiv nvim pavucontrol pcmanfm picom ranger rofi volumeicon
     xautolock xfce4-power-manager yay zsh
   )
   if [ "$WITH_CONKY" -eq 1 ]; then
@@ -693,6 +709,7 @@ main() {
   install_system_configs
   install_wallpaper
   install_oh_my_zsh
+  install_powerlevel10k
   enable_services
   change_default_shell
   postflight_checks

@@ -22,13 +22,14 @@ The goal is:
 - install and configure LightDM
 - install the default wallpaper
 - install `oh-my-zsh`
+- install `powerlevel10k` as the default zsh theme
 - set the default shell to `zsh`
 - set the default keyboard layout to `gb`
 - enable `NetworkManager` and `lightdm`
 - run post-install checks for expected commands and services
 - back up replaced system files under `/var/backups/i3-setup/<timestamp>`
 
-The bootstrap pins `oh-my-zsh` to a known git commit on fresh installs instead of executing the remote upstream install script at install time. If `~/.oh-my-zsh` already exists, reruns leave it untouched.
+The bootstrap pins `oh-my-zsh` and `powerlevel10k` to known git commits on fresh installs instead of executing remote install scripts at install time. If `~/.oh-my-zsh` or the `powerlevel10k` theme directory already exists, reruns leave them untouched.
 
 Package note:
 
@@ -126,6 +127,7 @@ The installer is intended to be re-runnable.
 - matching target files are backed up and replaced
 - unrelated files in the same directories are left in place
 - existing `~/.oh-my-zsh` directories are not re-cloned, but the expected plugin links are refreshed
+- existing `~/.oh-my-zsh/custom/themes/powerlevel10k` directories are not re-cloned
 
 ## Wallpaper
 
@@ -175,7 +177,7 @@ The default desktop style shipped by this repo is:
 - LightDM greeter: `Pop-dark` with `Numix-Circle`
 - rofi theme: `arc_dark_transparent_colors`
 - terminal theme: dark neon/cyberpunk Alacritty theme with 70% opacity
-- shell: `oh-my-zsh` with the `xiong-chiamiov-plus` theme
+- shell: `oh-my-zsh` with the `powerlevel10k` theme
 
 Other defaults:
 
@@ -184,6 +186,18 @@ Other defaults:
 - editor default: `nvim`
 - browser default: `google-chrome-stable`
 - terminal default: `alacritty`
+
+## Powerlevel10k
+
+The bootstrap installs `powerlevel10k`, sets it as the default `oh-my-zsh` theme, and copies a base `~/.p10k.zsh` so first launch does not drop into the setup wizard.
+
+If you want to regenerate the prompt for your own preferences later, run:
+
+```bash
+p10k configure
+```
+
+That command rewrites `~/.p10k.zsh` for the current user. If you want those changes to become the new bootstrap default, copy the updated file back into `resources/.p10k.zsh` in this repo.
 
 ## Default i3 Shortcuts
 
