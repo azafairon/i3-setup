@@ -15,6 +15,9 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     opts = require "configs.treesitter",
+    init = function(plugin)
+      vim.opt.rtp:append(plugin.dir .. "/runtime")
+    end,
   },
 
   {

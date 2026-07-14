@@ -55,6 +55,7 @@ flameshot
 flatpak
 autorandr
 go
+gopls
 fzf
 ranger
 nmap

@@ -659,7 +659,7 @@ verify_commands() {
   local missing=()
   local commands=(
     alacritty autorandr blurlock code copyq dunst feh fzf google-chrome-stable i3exit
-    jgmenu_run flameshot lightdm nm-applet nsxiv nvim pavucontrol pcmanfm picom ranger rofi volumeicon
+    gopls jgmenu_run flameshot lightdm nm-applet nsxiv nvim pavucontrol pcmanfm picom ranger rofi volumeicon
     xautolock xfce4-power-manager yay zsh
   )
   if [ "$WITH_CONKY" -eq 1 ]; then
