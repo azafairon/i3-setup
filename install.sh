@@ -517,6 +517,8 @@ install_user_configs() {
   copy_tree_contents "$RESOURCES_DIR/.config" "$HOME/.config"
   copy_tree_contents "$RESOURCES_DIR/.icons" "$HOME/.icons"
   copy_tree_contents "$RESOURCES_DIR/.local" "$HOME/.local"
+  mkdir -p "$HOME/.npm-global/bin"
+  mkdir -p "$HOME/.npm-global/lib/node_modules"
 
   install_file_with_backup "$RESOURCES_DIR/.Xresources" "$HOME/.Xresources"
   install_file_with_backup "$RESOURCES_DIR/.zshrc" "$HOME/.zshrc"
