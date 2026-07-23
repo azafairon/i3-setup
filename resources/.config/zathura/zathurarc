@@ -1,0 +1,6 @@
+set database sqlite
+set open-first-page false
+set adjust-open width
+set page-padding 1
+set guioptions s
+set selection-clipboard clipboard
