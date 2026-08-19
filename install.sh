@@ -12,7 +12,7 @@ OH_MY_ZSH_REPO="https://github.com/ohmyzsh/ohmyzsh.git"
 OH_MY_ZSH_COMMIT="70ad5e3df8f7bed68aa6672029496926e632aedd"
 POWERLEVEL10K_REPO="https://github.com/romkatv/powerlevel10k.git"
 POWERLEVEL10K_COMMIT="9253fb1c5034410c43a0c681ff8294181c54016c"
-PATH="$HOME/.local/bin:$PATH"
+PATH="$HOME/.cargo/bin:/usr/lib/rustup/bin:$HOME/.local/bin:$PATH"
 
 BACKUP_CREATED=0
 SAFE_GRAPHICS=0
@@ -479,6 +479,16 @@ install_official_packages() {
   sudo pacman -S --needed --noconfirm "${PACKAGE_LIST[@]}"
 }
 
+setup_rust_toolchain() {
+  if ! command -v rustup >/dev/null 2>&1; then
+    return
+  fi
+
+  log "Configuring Rust toolchain"
+  rustup default stable
+  rustup component add rust-analyzer rustfmt clippy
+}
+
 bootstrap_yay_if_needed() {
   if command -v yay >/dev/null 2>&1; then
     return
@@ -661,7 +671,7 @@ verify_commands() {
   local missing=()
   local commands=(
     alacritty autorandr blurlock code copyq dunst feh fzf google-chrome-stable i3exit
-    gopls jgmenu_run flameshot lightdm nm-applet nsxiv nvim pavucontrol pcmanfm picom ranger rofi volumeicon
+    cargo clippy-driver gopls jgmenu_run flameshot lightdm nm-applet nsxiv nvim pavucontrol pcmanfm picom ranger rofi rust-analyzer rustfmt rustup volumeicon
     xautolock xfce4-power-manager yay zsh
   )
   if [ "$WITH_CONKY" -eq 1 ]; then
@@ -704,6 +714,7 @@ main() {
   configure_optional_features
   install_bootstrap_packages
   install_official_packages
+  setup_rust_toolchain
   bootstrap_yay_if_needed
   install_aur_packages
   install_user_configs

@@ -20,9 +20,4 @@ return {
     end,
   },
 
-  {
-    "mrcjkb/rustaceanvim",
-    version = "^6",
-    lazy = false,
-  },
 }

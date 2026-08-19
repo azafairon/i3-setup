@@ -15,6 +15,7 @@ The goal is:
 
 - detect EndeavourOS or Arch-based systems
 - install official packages from `packages`
+- initialize Rust with `rustup default stable` and the `rust-analyzer`, `rustfmt`, and `clippy` components
 - bootstrap `yay` if needed
 - install AUR packages from `packages-aur`
 - back up replaced user files into `~/.i3-setup-backups/<timestamp>`
@@ -35,6 +36,8 @@ Package note:
 
 - `mesa` is installed as the baseline graphics/OpenGL stack
 - the official package list uses `neovim` rather than `nvim`
+- Rust is bootstrapped with the `rustup` package, then the installer enables the stable toolchain plus `rust-analyzer`, `rustfmt`, and `clippy`
+- `tree-sitter-cli` is installed so Neovim can build Treesitter parsers with `:TSInstall`
 - wallpaper handling uses `feh` rather than `nitrogen`
 - clipboard manager uses `copyq` rather than `clipit`
 - the categorized app launcher uses `jgmenu` rather than `morc_menu`
@@ -487,13 +490,15 @@ After install, check:
 - i3 launches successfully
 - `zsh` is the default shell
 - `nvim`, `code`, `rofi`, `alacritty`, and `google-chrome-stable` are installed
+- `rustup`, `cargo`, `rust-analyzer`, `rustfmt`, and `clippy-driver` are available for Rust development
 - the wallpaper and theming look correct
 
 Useful commands inside the VM:
 
 ```bash
 echo $SHELL
-command -v nvim code rofi alacritty google-chrome-stable flameshot yay
+command -v nvim code rofi alacritty google-chrome-stable flameshot yay cargo rust-analyzer rustfmt clippy-driver
+rustup show active-toolchain
 systemctl status lightdm --no-pager
 systemctl status NetworkManager --no-pager
 ```

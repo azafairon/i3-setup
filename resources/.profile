@@ -1,5 +1,5 @@
 export NPM_CONFIG_PREFIX="$HOME/.npm-global"
-export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/bin:/usr/local/bin:$HOME/go/bin:$PATH"
+export PATH="$HOME/.cargo/bin:/usr/lib/rustup/bin:$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/bin:/usr/local/bin:$HOME/go/bin:$PATH"
 export QT_QPA_PLATFORMTHEME="qt5ct"
 export EDITOR=nvim
 export GTK2_RC_FILES="$HOME/.gtkrc-2.0"

@@ -2,7 +2,7 @@
 require("nvchad.configs.lspconfig").defaults()
 
 -- EXAMPLE
-local servers = { "gopls", "pyright" }
+local servers = { "gopls", "pyright", "rust_analyzer" }
 local nvlsp = require "nvchad.configs.lspconfig"
 
 -- lsps with default config

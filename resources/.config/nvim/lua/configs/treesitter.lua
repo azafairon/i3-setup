@@ -10,6 +10,7 @@ local options = {
     "luadoc",
     "markdown",
     "printf",
+    "rust",
     "toml",
     "vim",
     "vimdoc",

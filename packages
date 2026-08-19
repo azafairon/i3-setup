@@ -56,6 +56,8 @@ flatpak
 autorandr
 go
 gopls
+rustup
+tree-sitter-cli
 fzf
 ranger
 nmap
