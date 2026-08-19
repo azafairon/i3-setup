@@ -94,10 +94,27 @@ warning_bg = { link = "idle_bg" }
 button = "left"
 action = "toggle_mute"
 
-
 [[block]]
 block = "time"
 format = "$timestamp.datetime(f:'%a %d %R') "
+
+[[block]]
+block = "music"
+player = "ncspot"
+separator = " — "
+format = " $icon {$combo.str(max_w:32,rot_interval:0.5) $play |}"
+format_alt = " $icon {$combo.str(max_w:60,rot_interval:0.3) $prev $play $next |}"
+seek_step_secs = 5
+[[block.click]]
+button = "middle"
+widget = "."
+action = "toggle_format"
+[[block.click]]
+button = "up"
+action = "seek_forward"
+[[block.click]]
+button = "down"
+action = "seek_backward"
 
 [[block]]
 block = "battery"
